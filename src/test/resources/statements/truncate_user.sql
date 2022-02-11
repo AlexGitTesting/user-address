@@ -1,0 +1,1 @@
+truncate  user_profile cascade ;
