@@ -24,10 +24,16 @@ public class Country extends AuditableEntity{
     }
 
     public Country(String name) {
+        super();
         this.name = name;
     }
 
     public Country() {
+        super();
+    }
+
+    public Country(Long id) {
+        super(id);
     }
 
     @Override
@@ -37,5 +43,5 @@ public class Country extends AuditableEntity{
                 '}';
     }
 
-    // TODO: 10.02.2022 equals and hash
+
 }

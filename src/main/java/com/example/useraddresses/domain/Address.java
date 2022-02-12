@@ -85,13 +85,20 @@ public class Address extends AuditableEntity {
     public void setCountry(Country country) {
         this.country = country;
     }
-    // TODO: 10.02.2022 equals hash
 
+    // TODO: 10.02.2022 equals hash
+// TODO: 12.02.2022 description 
+    public boolean isMatchAddress(final Address another)  {
+        return this.getCity().equalsIgnoreCase(another.getCity())
+                && this.getStreet().equalsIgnoreCase(another.getStreet())
+                && this.getHouseNumber().equalsIgnoreCase(another.getHouseNumber())
+                && this.getFlatNumber().equalsIgnoreCase(another.getFlatNumber())
+                && this.getCountry().getId().equals(another.getCountry().getId());
+    }
 
     @Override
     public String toString() {
         return "Address{" +
-
                 ", city='" + city + '\'' +
                 ", street='" + street + '\'' +
                 ", houseNumber='" + houseNumber + '\'' +
@@ -99,4 +106,5 @@ public class Address extends AuditableEntity {
                 ", country=" + country +
                 '}';
     }
+
 }

@@ -35,5 +35,11 @@ public abstract class AuditableEntity extends BaseEntity {
         return modifiedDate;
     }
 
+    public AuditableEntity(Long id) {
+        super(id);
+    }
+
+    public AuditableEntity() {
+    }
     // TODO: 10.02.2022 equals and hashCode
 }

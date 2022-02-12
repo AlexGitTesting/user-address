@@ -3,7 +3,7 @@ package com.example.useraddresses.domain;
 
 import javax.persistence.*;
 import java.util.Collections;
-import java.util.Set;
+import java.util.List;
 
 import static java.util.Objects.requireNonNullElse;
 
@@ -26,7 +26,7 @@ public class User extends AuditableEntity {
     private String email;
     // TODO: 10.02.2022 batchsize
     @OneToMany(mappedBy = "user", fetch = FetchType.LAZY, orphanRemoval = true, cascade = {CascadeType.PERSIST, CascadeType.MERGE})
-    private Set<Address> address;
+    private List<Address> addresses;
 
     public String getFirstname() {
         return firstname;
@@ -60,11 +60,11 @@ public class User extends AuditableEntity {
         this.email = email;
     }
 
-    public Set<Address> getAddress() {
-        if (address == null) {
-            address = Collections.emptySet();
+    public List<Address> getAddresses() {
+        if (addresses == null) {
+            addresses = Collections.emptyList();
         }
-        return address;
+        return addresses;
     }
 
     public String getFullName() {
@@ -76,19 +76,27 @@ public class User extends AuditableEntity {
                 .append(getLastname()).toString();
     }
 
-    public void setAddress(Set<Address> address) {
-        this.address = address;
+    public void setAddresses(List<Address> address) {
+        this.addresses = address;
         address.forEach(address1 -> address1.setUser(this));
     }
 
-    public boolean addAddresses(Set<Address> address) {
+    public void addOneAddress(final Address address) throws IllegalArgumentException {
+        final boolean isMatch = getAddresses().stream()
+                .anyMatch(address1 -> address1.isMatchAddress(address));
+        if (isMatch) throw new IllegalArgumentException("Address already exists for current user");
+        getAddresses().add(address);
+        address.setUser(this);
+    }
+
+    public boolean addAddresses(List<Address> address) {
         address.forEach(address1 -> address1.setUser(this));
-        return getAddress().addAll(address);
+        return getAddresses().addAll(address);
     }
 
     public void removeAddress(final Address address) {
-        if (getAddress().contains(address)) {
-            getAddress().remove(address);
+        if (getAddresses().contains(address)) {
+            getAddresses().remove(address);
             address.setUser(null);
         } else {
             // TODO: 10.02.2022 buider or local message
@@ -99,12 +107,12 @@ public class User extends AuditableEntity {
     public User() {
     }
 
-    public User(String firstname, String lastname, String patronymic, String email, Set<Address> address) {
+    public User(String firstname, String lastname, String patronymic, String email, List<Address> addresses) {
         this.firstname = firstname;
         this.lastname = lastname;
         this.patronymic = patronymic;
         this.email = email;
-        this.address = address;
+        this.addresses = addresses;
     }
 
     @Override
@@ -114,7 +122,7 @@ public class User extends AuditableEntity {
                 ", lastname='" + lastname + '\'' +
                 ", patronymic='" + patronymic + '\'' +
                 ", email='" + email + '\'' +
-                ", address=" + address +
+                ", address=" + addresses +
                 '}';
     }
 }
