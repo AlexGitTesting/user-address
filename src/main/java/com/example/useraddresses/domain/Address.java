@@ -16,16 +16,33 @@ public class Address extends AuditableEntity {
     private User user;
     @Column(name = "city", nullable = false)
     private String city;
+    @Column(name = "street")
+    private String street;
+    @Column(name = "house")
+    private String houseNumber;
+    @Column(name = "flat_number")
+    private String flatNumber;
     @ManyToOne(optional = false)
     @JoinColumn(name = "country_id")
     private Country country;
 
+    public Address() {
+    }
+
+    public Address(User user, String city, String street, String houseNumber, String flatNumber, Country country) {
+        this.user = user;
+        this.city = city;
+        this.street = street;
+        this.houseNumber = houseNumber;
+        this.flatNumber = flatNumber;
+        this.country = country;
+    }
 
     public User getUser() {
         return user;
     }
 
-    public void setUser(final User user) {
+    public void setUser(User user) {
         this.user = user;
     }
 
@@ -33,25 +50,53 @@ public class Address extends AuditableEntity {
         return city;
     }
 
-    public void setCity(final String city) {
+    public void setCity(String city) {
         this.city = city;
+    }
+
+    public String getStreet() {
+        return street;
+    }
+
+    public void setStreet(String street) {
+        this.street = street;
+    }
+
+    public String getHouseNumber() {
+        return houseNumber;
+    }
+
+    public void setHouseNumber(String houseNumber) {
+        this.houseNumber = houseNumber;
+    }
+
+    public String getFlatNumber() {
+        return flatNumber;
+    }
+
+    public void setFlatNumber(String flatNumber) {
+        this.flatNumber = flatNumber;
     }
 
     public Country getCountry() {
         return country;
     }
 
-    public void setCountry(final Country country) {
-        this.country = country;
-    }
-
-    public Address() {
-    }
-
-    public Address(final User user, final String city, final Country country) {
-        this.user = user;
-        this.city = city;
+    public void setCountry(Country country) {
         this.country = country;
     }
     // TODO: 10.02.2022 equals hash
+
+
+    @Override
+    public String toString() {
+        return "Address{" +
+
+                ", city='" + city + '\'' +
+                ", street='" + street + '\'' +
+                ", houseNumber='" + houseNumber + '\'' +
+                ", flatNumber='" + flatNumber + '\'' +
+                ", country=" + country +
+                '}';
+    }
 }

@@ -13,21 +13,29 @@ import javax.persistence.Table;
 @Table(name = "country")
 public class Country extends AuditableEntity{
 
-    private String countryName;
+    private String name;
 
-    public String getCountryName() {
-        return countryName;
+    public String getName() {
+        return name;
     }
 
-    public void setCountryName(String countryName) {
-        this.countryName = countryName;
+    public void setName(String name) {
+        this.name = name;
     }
 
-    public Country(String countryName) {
-        this.countryName = countryName;
+    public Country(String name) {
+        this.name = name;
     }
 
     public Country() {
     }
+
+    @Override
+    public String toString() {
+        return "Country{" +
+                "name='" + name + '\'' +
+                '}';
+    }
+
     // TODO: 10.02.2022 equals and hash
 }

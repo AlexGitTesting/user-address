@@ -1,1 +1,11 @@
+spring:
+  jpa:
+    properties:
+      hibernate:
+        highlight_sql: on
 
+logging:
+  level:
+    sql: info
+    root: info
+    web: debug
