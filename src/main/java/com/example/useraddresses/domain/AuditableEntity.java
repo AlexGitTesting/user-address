@@ -39,7 +39,21 @@ public abstract class AuditableEntity extends BaseEntity {
         super(id);
     }
 
+    public AuditableEntity(Long id, LocalDateTime createdDate, LocalDateTime modifiedDate) {
+        super(id);
+        this.createdDate = createdDate;
+        this.modifiedDate = modifiedDate;
+    }
+
     public AuditableEntity() {
+    }
+
+    @Override
+    public String toString() {
+        return "AuditableEntity{" +
+                "createdDate=" + createdDate +
+                ", modifiedDate=" + modifiedDate +
+                '}';
     }
     // TODO: 10.02.2022 equals and hashCode
 }

@@ -2,7 +2,8 @@ package com.example.useraddresses.domain;
 
 
 import javax.persistence.*;
-import java.util.Collections;
+import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 
 import static java.util.Objects.requireNonNullElse;
@@ -32,8 +33,8 @@ public class User extends AuditableEntity {
         return firstname;
     }
 
-    public void setFirstname(final String firstname) {
-        this.firstname = firstname;
+    public void setFirstname(final String firstName) {
+        this.firstname = firstName;
     }
 
     public String getLastname() {
@@ -62,7 +63,7 @@ public class User extends AuditableEntity {
 
     public List<Address> getAddresses() {
         if (addresses == null) {
-            addresses = Collections.emptyList();
+            addresses = new ArrayList<>();
         }
         return addresses;
     }
@@ -113,6 +114,14 @@ public class User extends AuditableEntity {
         this.patronymic = patronymic;
         this.email = email;
         this.addresses = addresses;
+    }
+
+    public User(Long id, LocalDateTime createdDate, LocalDateTime modifiedDate, String firstname, String lastname, String patronymic, String email) {
+        super(id, createdDate, modifiedDate);
+        this.firstname = firstname;
+        this.lastname = lastname;
+        this.patronymic = patronymic;
+        this.email = email;
     }
 
     @Override

@@ -27,6 +27,8 @@ dependencies {
     annotationProcessor 'org.mapstruct:mapstruct-processor:1.4.2.Final'
     testImplementation'org.testcontainers:postgresql'
     implementation 'org.springframework.boot:spring-boot-starter-validation'
+    annotationProcessor'org.hibernate:hibernate-jpamodelgen'
+    implementation 'org.springframework.boot:spring-boot-starter-mail'
 
 }
 

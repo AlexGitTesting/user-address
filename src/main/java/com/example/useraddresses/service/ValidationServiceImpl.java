@@ -32,9 +32,9 @@ public class ValidationServiceImpl implements ValidationService {
     }
 
     @Override
-    public void validate(Object target, String objectName) throws ValidationCustomException {
+    public void validate(Object target, String objectName, Object... validationHints) throws ValidationCustomException {
         final MapBindingResult mapBindingResult = new MapBindingResult(new LinkedHashMap<String, String>(), objectName);
-        validator.validate(target, mapBindingResult);
+        validator.validate(target, mapBindingResult, validationHints);
         if (mapBindingResult.hasErrors()) {
             final Map<String, String> messageMap = new HashMap<>();
             for (ObjectError objectError : mapBindingResult.getAllErrors()) {

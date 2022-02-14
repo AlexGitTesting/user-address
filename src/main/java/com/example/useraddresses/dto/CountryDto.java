@@ -3,11 +3,13 @@ package com.example.useraddresses.dto;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonPOJOBuilder;
 
+import javax.validation.constraints.Min;
+import javax.validation.constraints.NotNull;
 import java.io.Serial;
 import java.io.Serializable;
 
 /**
- * Represents dto for the country entity.
+ * Represents dto for the name entity.
  *
  * @author Alexandr Yefremov
  */
@@ -15,26 +17,28 @@ import java.io.Serializable;
 public final class CountryDto implements Serializable {
     @Serial
     private static final long serialVersionUID = 42L;
+    @NotNull
+    @Min(value = 1)// TODO: 14.02.2022 message
     private final Long id;
-    private final String country;
+    private final String name;
 
     private CountryDto(Builder builder) {
         this.id = builder.id;
-        this.country = builder.country;
+        this.name = builder.name;
     }
 
     @JsonPOJOBuilder(withPrefix = "")
     public static class Builder {
         private Long id;
-        private String country;
+        private String name;
 
         public CountryDto.Builder id(final Long id) {
             this.id = id;
             return this;
         }
 
-        public CountryDto.Builder country(final String country) {
-            this.country = country;
+        public CountryDto.Builder name(final String name) {
+            this.name = name;
             return this;
         }
 
@@ -52,7 +56,15 @@ public final class CountryDto implements Serializable {
         return id;
     }
 
-    public String getCountry() {
-        return country;
+    public String getName() {
+        return name;
+    }
+
+    @Override
+    public String toString() {
+        return "CountryDto{" +
+                "id=" + id +
+                ", name='" + name + '\'' +
+                '}';
     }
 }

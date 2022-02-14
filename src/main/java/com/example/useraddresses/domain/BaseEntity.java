@@ -65,4 +65,12 @@ public abstract class BaseEntity implements Serializable {
     public int hashCode() {
         return getId() != null ? getId().hashCode() : 0;
     }
+
+    @Override
+    public String toString() {
+        return "BaseEntity{" +
+                "id=" + id +
+                ", version=" + version +
+                '}';
+    }
 }

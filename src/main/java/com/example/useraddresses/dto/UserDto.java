@@ -3,19 +3,16 @@ package com.example.useraddresses.dto;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonPOJOBuilder;
 
+import javax.validation.constraints.Email;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.Size;
 import java.io.Serial;
 import java.io.Serializable;
-import java.util.List;
-
-import static java.util.Collections.emptyList;
 
 /**
  * Represents dto for user
  *
  * @author Alexandr Yefremov
- * @see BaseDto
  */
 @JsonDeserialize(builder = UserDto.Builder.class)
 public final class UserDto implements Serializable {
@@ -24,26 +21,24 @@ public final class UserDto implements Serializable {
 
     private final Long id;
     @NotBlank(message = "user.validation.empty.field")
-    @Size(max = 50, min = 1, message = "user.validation.field.length")
+    @Size(max = 100, min = 1, message = "user.validation.field.length")
     private final String firstname;
     @NotBlank(message = "user.validation.empty.field")
-    @Size(max = 50, min = 1, message = "user.validation.field.length")
-    private final String lastName;
-    @NotBlank(message = "user.validation.empty.field")
-    @Size(max = 50, min = 1, message = "user.validation.field.length")
+    @Size(max = 100, min = 1, message = "user.validation.field.length")
+    private final String lastname;
+    @Size(max = 100, message = "user.validation.field.length")
     private final String patronymic;
     @NotBlank(message = "user.validation.empty.field")
-    @Size(max = 50, min = 1, message = "user.validation.field.length")
+    @Size(max = 255, min = 1, message = "user.validation.field.length")
+    @Email
     private final String email;
-    private final List<AddressDto> addressDto;
 
     private UserDto(Builder builder) {
-        this.id=builder.id;
+        this.id = builder.id;
         this.firstname = builder.firstname;
-        this.lastName = builder.lastName;
+        this.lastname = builder.lastname;
         this.patronymic = builder.patronymic;
         this.email = builder.email;
-        this.addressDto = builder.addressDto == null ? emptyList() : List.copyOf(builder.addressDto);
     }
 
     public static Builder builder() {
@@ -54,10 +49,10 @@ public final class UserDto implements Serializable {
     public static class Builder {
         private Long id;
         private String firstname;
-        private String lastName;
+        private String lastname;
         private String patronymic;
         private String email;
-        private List<AddressDto> addressDto;
+
 
         public UserDto build() {
             return new UserDto(this);
@@ -68,13 +63,13 @@ public final class UserDto implements Serializable {
             return this;
         }
 
-        public UserDto.Builder firstName(final String firstname) {
+        public UserDto.Builder firstname(final String firstname) {
             this.firstname = firstname;
             return this;
         }
 
-        public UserDto.Builder lastName(final String lastName) {
-            this.lastName = lastName;
+        public UserDto.Builder lastname(final String lastname) {
+            this.lastname = lastname;
             return this;
         }
 
@@ -87,10 +82,6 @@ public final class UserDto implements Serializable {
             this.email = email;
             return this;
         }
-        public UserDto.Builder addressDto(final List<AddressDto> addressDto) {
-            this.addressDto = addressDto;
-            return this;
-        }
     }
 
     public Long getId() {
@@ -101,8 +92,8 @@ public final class UserDto implements Serializable {
         return firstname;
     }
 
-    public String getLastName() {
-        return lastName;
+    public String getLastname() {
+        return lastname;
     }
 
     public String getPatronymic() {
@@ -113,7 +104,4 @@ public final class UserDto implements Serializable {
         return email;
     }
 
-    public List<AddressDto> getAddressDto() {
-        return addressDto;
-    }
 }

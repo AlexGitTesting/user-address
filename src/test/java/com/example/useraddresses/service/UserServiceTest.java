@@ -17,8 +17,8 @@ class UserServiceTest {
     @Test
     void createUser() throws ValidationException {
 
-        final UserDto userDto = UserDto.builder().firstName("first").lastName("last").patronymic("patronymic").email("mail@").addressDto(Collections.emptyList()).build();
-        final UserDto user = userService.createUser(userDto);
+//        final UserDto userDto = UserDto.builder().firstname("first").lastname("last").patronymic("patronymic").email("mail@").).build();
+//        final UserDto user = userService.createUser(userDto);
 
     }
 }

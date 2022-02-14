@@ -1,88 +1,139 @@
 package com.example.useraddresses.dto;
 
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.fasterxml.jackson.databind.annotation.JsonPOJOBuilder;
+
+import javax.validation.constraints.Pattern;
+import javax.validation.constraints.Size;
 import java.io.Serializable;
+import java.util.Optional;
+
+import static java.util.Optional.ofNullable;
 
 // TODO: 12.02.2022 fill
+@JsonDeserialize(builder = UserQueryFilter.Builder.class)
 public class UserQueryFilter implements Serializable {
-    private int page;
-    private int limit;
-    private String sortingField;
-    private boolean sortingAscending = true;
-    private String city;
-    private String firstName;
-    private String lastName;
-    private String patronymic;
-    private Long countryId;
+    private final Integer page;
+    private final Integer limit;
+    private final boolean sortingAscending;
+    @Size(max = 30, message = "user.validation.field.length")
+    @Pattern(regexp = "^([\\p{L} \\d-']*)$", message = "user.validation.field.pattern")
+    private final String city;
+    @Size(max = 100, message = "user.validation.field.length")
+    @Pattern(regexp = "^([\\p{L} \\d-']*)$", message = "user.validation.field.pattern")
+    @Size(max = 100,  message = "user.validation.field.length")
+    private final String firstname;
+    @Pattern(regexp = "^([\\p{L} \\d-']*)$", message = "user.validation.field.pattern")
+    @Size(max = 100,  message = "user.validation.field.length")
+    private final String lastname;
+    @Pattern(regexp = "^([\\p{L} \\d-']*)$", message = "user.validation.field.pattern")
+    @Size(max = 100, message = "user.validation.field.length")
+    private final String patronymic;
+    private final Long countryId;
 
-    public int getPage() {
+    private UserQueryFilter(Builder builder) {
+        this.page = builder.page;
+        this.limit = builder.limit;
+        this.sortingAscending=builder.sortingAscending;
+        this.city = builder.city;
+        this.firstname = builder.firstname;
+        this.lastname = builder.lastname;
+        this.patronymic = builder.patronymic;
+        this.countryId = builder.countryId;
+    }
+
+    public static UserQueryFilter.Builder builder() {
+        return new UserQueryFilter.Builder();
+    }
+
+    @JsonPOJOBuilder(withPrefix = "")
+    public static class Builder {
+        private Integer page;
+        private Integer limit;
+        private boolean sortingAscending;
+        private String city;
+        private String firstname;
+        private String lastname;
+        private String patronymic;
+        private Long countryId;
+
+        public UserQueryFilter.Builder page(final Integer page) {
+            this.page = page;
+            return this;
+        }
+
+        public UserQueryFilter.Builder limit(final Integer limit) {
+            this.limit = limit;
+            return this;
+        }
+
+        public UserQueryFilter.Builder sortingAscending(final boolean sortingAscending) {
+            this.sortingAscending = sortingAscending;
+            return this;
+        }
+
+        public UserQueryFilter.Builder city(final String city) {
+            this.city = city;
+            return this;
+        }
+
+        public UserQueryFilter.Builder firstname(final String firstname) {
+            this.firstname = firstname;
+            return this;
+        }
+
+        public UserQueryFilter.Builder lastname(final String lastname) {
+            this.lastname = lastname;
+            return this;
+        }
+
+        public UserQueryFilter.Builder patronymic(final String patronymic) {
+            this.patronymic = patronymic;
+            return this;
+        }
+
+        public UserQueryFilter.Builder countryId(final Long countryId) {
+            this.countryId = countryId;
+            return this;
+        }
+
+    }
+
+    public Integer getPage() {
         return Math.max(0, this.page);
     }
 
-    public void setPage(int page) {
-        this.page = Math.max(0, page);
+
+    public Integer getLimit() {
+        return Math.max(2, this.limit);
     }
 
-    public int getLimit() {
-        return Math.max(0, this.limit);
-    }
-
-    public void setLimit(int limit) {
-        this.limit = Math.max(0, limit);
-    }
-
-    public String getSortingField() {
-        return sortingField;
-    }
-
-    public void setSortingField(String sortingField) {
-        this.sortingField = sortingField;
-    }
 
     public boolean isSortingAscending() {
         return sortingAscending;
     }
 
-    public void setSortingAscending(boolean sortingAscending) {
-        this.sortingAscending = sortingAscending;
+
+    public Optional<String> getCity() {
+        return ofNullable(city);
     }
 
-    public String getCity() {
-        return city;
+
+    public Optional<String> getFirstname() {
+        return ofNullable(firstname);
     }
 
-    public void setCity(String city) {
-        this.city = city;
+
+    public Optional<String> getLastname() {
+        return ofNullable(lastname);
     }
 
-    public String getFirstName() {
-        return firstName;
+
+    public Optional<String> getPatronymic() {
+        return ofNullable(patronymic);
+    }
+    public Optional<Long> getCountryId() {
+        return ofNullable(countryId);
     }
 
-    public void setFirstName(String firstName) {
-        this.firstName = firstName;
-    }
-
-    public String getLastName() {
-        return lastName;
-    }
-
-    public void setLastName(String lastName) {
-        this.lastName = lastName;
-    }
-
-    public String getPatronymic() {
-        return patronymic;
-    }
-
-    public void setPatronymic(String patronymic) {
-        this.patronymic = patronymic;
-    }
-
-    public Long getCountryId() {
-        return countryId;
-    }
-
-    public void setCountryId(Long countryId) {
-        this.countryId = countryId;
-    }
 }
