@@ -11,7 +11,7 @@ import javax.persistence.*;
 @Entity
 @Table(name = "address")
 public class Address extends AuditableEntity {
-    @ManyToOne(fetch = FetchType.LAZY) // TODO: 10.02.2022  cascade type merge
+    @ManyToOne(fetch = FetchType.LAZY,optional = false) // TODO: 10.02.2022  cascade type merge
     @JoinColumn(name = "user_id", nullable = false)
     private User user;
     @Column(name = "city", nullable = false)

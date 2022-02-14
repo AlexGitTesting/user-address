@@ -26,7 +26,7 @@ public class User extends AuditableEntity {
     @Column(name = "email", nullable = false, unique = true)
     private String email;
     // TODO: 10.02.2022 batchsize
-    @OneToMany(mappedBy = "user", fetch = FetchType.LAZY, orphanRemoval = true, cascade = {CascadeType.PERSIST, CascadeType.MERGE})
+    @OneToMany(mappedBy = "user", fetch = FetchType.LAZY,  cascade = {CascadeType.REMOVE})
     private List<Address> addresses;
 
     public String getFirstname() {

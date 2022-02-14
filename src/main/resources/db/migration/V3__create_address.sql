@@ -9,7 +9,7 @@ create table if not exists address
     street varchar(50) not null ,
     house varchar(10) not null ,
     flat_number varchar(10),
-    user_id bigint not null constraint address_user_fk references  address,
+    user_id bigint not null constraint address_user_fk references  user_profile,
     country_id bigint not null constraint address_country_fk references country
 );
 create index address_city_index on address(city);

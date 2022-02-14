@@ -21,22 +21,29 @@ public class UserSpecificationImpl implements UserSpecification {
             applyOrder(root, query, cb, filter.isSortingAscending());
             addPredicateIfExists(predicates, filter.getFirstname().orElse(""), root.get(User_.firstname), cb);
             addPredicateIfExists(predicates, filter.getLastname().orElse(""), root.get(User_.lastname), cb);
-            addPredicateIfExists(predicates, filter.getPatronymic().orElse(""), root.get(User_.patronymic), cb);
-            final Join<User, Address> addressJoin;
-            final Join<Address, Country> countryJoin;
-            if (!query.getResultType().equals(Long.class)) {
-                final Fetch<User, Address> addresses = root.fetch(User_.addresses);
-                final Fetch<Address, Country> country = addresses.fetch(Address_.country);
-                //noinspection unchecked
-                addressJoin = (Join<User, Address>) addresses;
-                //noinspection unchecked
-                countryJoin = (Join<Address, Country>) country;
-            } else {
-                addressJoin = root.join(User_.addresses, JoinType.INNER);
-                countryJoin = addressJoin.join(Address_.country);
+            addPredicateIfExists(predicates, filter.getPatronymic().orElse(""), root.get(User_.patronymic), cb); // TODO: 14.02.2022 clean
+//            final Join<Address, Country> countryJoin;
+//            if (!query.getResultType().equals(Long.class)) {
+//                final Fetch<User, Address> addresses = root.fetch(User_.addresses);
+//                final Fetch<Address, Country> country = addresses.fetch(Address_.country);
+//                //noinspection unchecked
+//                addressJoin = (Join<User, Address>) addresses;
+//                //noinspection unchecked
+//                countryJoin = (Join<Address, Country>) country;
+//            } else {
+//                addressJoin = root.join(User_.addresses, JoinType.INNER);
+//                countryJoin = addressJoin.join(Address_.country);
+//            }
+//            addPredicateIfExists(predicates, filter.getCity().orElse(""), addressJoin.get(Address_.city), cb);
+//            filter.getCountryId().ifPresent(countryId -> predicates.add(cb.equal(countryJoin.get(Country_.id), countryId)));
+            if (filter.getCity().isPresent()) {
+                final Join<User, Address> addressJoin = root.join(User_.addresses, JoinType.INNER);
+                addPredicateIfExists(predicates, filter.getCity().orElse(""), addressJoin.get(Address_.city), cb);
             }
-            addPredicateIfExists(predicates, filter.getCity().orElse(""), addressJoin.get(Address_.city), cb);
-            filter.getCountryId().ifPresent(countryId -> predicates.add(cb.equal(countryJoin.get(Country_.id), countryId)));
+            if (filter.getCountryId().isPresent()) {
+                final Join<Address, Country> countryJoin = root.join(User_.addresses, JoinType.INNER).join(Address_.country);
+                predicates.add(cb.equal(countryJoin.get(Country_.id), filter.getCountryId()));
+            }
             return predicates.isEmpty()
                     ? null
                     : cb.and(predicates.toArray(Predicate[]::new));

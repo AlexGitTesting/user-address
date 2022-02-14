@@ -8,6 +8,6 @@ import java.util.Set;
 
 public interface AddressService {
     List<AddressDto> createAddress(List<AddressDto> addresses, Long userId)throws ValidationCustomException;
-    Set<Long> deleteAddress(Set<Long> addressIds, Long UserId);
+    Set<Long> deleteAddress(Set<Long> addressIds, Long userId);
     Set<AddressDto> updateAddress(Set<AddressDto> addresses, Long userId) throws ValidationCustomException;
 }

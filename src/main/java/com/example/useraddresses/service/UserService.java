@@ -13,13 +13,13 @@ import javax.persistence.EntityNotFoundException;
  */
 // TODO: 12.02.2022 fill the explanation
 @Service
-public interface UserService<U extends User,D extends UserDto, M extends UserModelDto,V extends AddressedUserDto> {
-    D createUser(D dto) throws IllegalArgumentException, ValidationCustomException;
-    V getUser(Long id);
+public interface UserService {
+    UserDto createUser(UserDto dto) throws IllegalArgumentException, ValidationCustomException;
+    AddressedUserDto getUser(Long id);
     Long deleteUser(Long id);
-    M getUserForUpdate(Long id) throws IllegalArgumentException, EntityNotFoundException;
-    V updateUser(D dto) throws ValidationCustomException, EntityNotFoundException;
-    Page<V>getFilteredUsers(UserQueryFilter filter) throws ValidationCustomException;
+    UserModelDto getUserForUpdate(Long id) throws IllegalArgumentException, EntityNotFoundException;
+    AddressedUserDto updateUser(UserDto dto) throws ValidationCustomException, EntityNotFoundException;
+    Page<UserDto>getFilteredUsers(UserQueryFilter filter) throws ValidationCustomException;
 
 
 

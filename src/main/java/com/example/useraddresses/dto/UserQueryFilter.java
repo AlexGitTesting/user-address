@@ -21,10 +21,10 @@ public class UserQueryFilter implements Serializable {
     private final String city;
     @Size(max = 100, message = "user.validation.field.length")
     @Pattern(regexp = "^([\\p{L} \\d-']*)$", message = "user.validation.field.pattern")
-    @Size(max = 100,  message = "user.validation.field.length")
+    @Size(max = 100, message = "user.validation.field.length")
     private final String firstname;
     @Pattern(regexp = "^([\\p{L} \\d-']*)$", message = "user.validation.field.pattern")
-    @Size(max = 100,  message = "user.validation.field.length")
+    @Size(max = 100, message = "user.validation.field.length")
     private final String lastname;
     @Pattern(regexp = "^([\\p{L} \\d-']*)$", message = "user.validation.field.pattern")
     @Size(max = 100, message = "user.validation.field.length")
@@ -32,9 +32,9 @@ public class UserQueryFilter implements Serializable {
     private final Long countryId;
 
     private UserQueryFilter(Builder builder) {
-        this.page = builder.page;
-        this.limit = builder.limit;
-        this.sortingAscending=builder.sortingAscending;
+        this.page = builder.page == null || builder.page < 0 ? 0 : builder.page;
+        this.limit = builder.limit == null || builder.limit < 0 ? 2 : builder.limit;
+        this.sortingAscending = builder.sortingAscending;
         this.city = builder.city;
         this.firstname = builder.firstname;
         this.lastname = builder.lastname;
@@ -97,15 +97,19 @@ public class UserQueryFilter implements Serializable {
             return this;
         }
 
+        public UserQueryFilter build() {
+            return new UserQueryFilter(this);
+        }
+
     }
 
     public Integer getPage() {
-        return Math.max(0, this.page);
+        return this.page;
     }
 
 
     public Integer getLimit() {
-        return Math.max(2, this.limit);
+        return this.limit;
     }
 
 
@@ -132,6 +136,7 @@ public class UserQueryFilter implements Serializable {
     public Optional<String> getPatronymic() {
         return ofNullable(patronymic);
     }
+
     public Optional<Long> getCountryId() {
         return ofNullable(countryId);
     }
