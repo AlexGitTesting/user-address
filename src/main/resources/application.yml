@@ -1,9 +1,3 @@
-spring:
-  jpa:
-    properties:
-      hibernate:
-        highlight_sql: on
-
 logging:
   level:
     sql: info

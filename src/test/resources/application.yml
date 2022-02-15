@@ -4,6 +4,8 @@ spring:
     properties:
       hibernate:
         highlight_sql: on
+        criteria:
+          literal_handling_mode: BIND
   test:
     database:
       replace: none

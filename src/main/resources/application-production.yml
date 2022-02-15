@@ -1,0 +1,13 @@
+spring:
+  mail:
+    host: smtp.ukr.net
+    port: 2525
+    username: user3101bro@ukr.net
+    password: vevUF38o4V0t59Kx
+    properties:
+      mail:
+        smtp:
+          auth: true
+          starttls:
+            enable: true
+

@@ -9,7 +9,9 @@ import com.example.useraddresses.domain.User;
 import com.example.useraddresses.dto.AddressDto;
 import com.example.useraddresses.service.converter.AddressConverter;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.MessageSource;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.validation.groups.Default;
@@ -23,23 +25,25 @@ public class AddressServiceImpl implements AddressService {
     private final AddressRepository addressRepository;
     private final ValidationService validationService;
     private final AddressConverter addressConverter;
+    private final MessageSource messageSource;
 
     @Autowired
     public AddressServiceImpl(final AddressRepository addressRepository,
                               final ValidationService validationService,
-                              final AddressConverter addressConverter) {
+                              final AddressConverter addressConverter, MessageSource messageSource) {
         this.addressRepository = addressRepository;
         this.validationService = validationService;
         this.addressConverter = addressConverter;
+        this.messageSource = messageSource;
     }
 
     @Override
     @Transactional
     public List<AddressDto> createAddress(List<AddressDto> dto, Long userId) throws ValidationCustomException {
-        // TODO: 14.02.2022 check if user exists validating if name
-
-        if (!(userId == null || userId < 1))
-            throw new IllegalArgumentException("user is not new"); // TODO: 14.02.2022   validate into controller
+        // TODO: 14.02.2022 check if user exists validating if nam
+//        final HashMap<String, String> fields = new HashMap<>();
+//        fields.put("field","user.validation.wrong.address.ids");
+//        throw  new ValidationCustomException(fields);
         verifyAddressesGroup(dto, RequiredFieldsForCreation.class);
         final User user = new User();
         user.setId(userId);
@@ -50,7 +54,7 @@ public class AddressServiceImpl implements AddressService {
 
     @Override
     @Transactional
-    public Set<Long> deleteAddress(Set<Long> addressIds, Long userId) { // TODO: 14.02.2022  check into controller ids
+    public Set<Long> deleteAddress(Set<Long> addressIds, Long userId) {
         final Set<Long> addressIdByUserId = addressRepository.getAddressIdsByUserId(userId);
         if (!addressIdByUserId.containsAll(addressIds))
             throw new IllegalStateException("user.validation.wrong.address.ids");
@@ -59,8 +63,8 @@ public class AddressServiceImpl implements AddressService {
     }
 
     @Override
-    @Transactional
-    public Set<AddressDto> updateAddress(Set<AddressDto> addresses, Long userId) throws ValidationCustomException { // TODO: 14.02.2022 verify ids in controller
+    @Transactional(isolation = Isolation.REPEATABLE_READ)
+    public Set<AddressDto> updateAddress(Set<AddressDto> addresses, Long userId) throws ValidationCustomException {
         verifyAddressesGroup(addresses, RequiredFieldsForUpdating.class);
         final Set<Long> dtoIds = addresses.stream().map(AddressDto::getId).collect(toSet());
         final Set<Address> userAddressesByIdIn = addressRepository.findAddressesByUserIdIn(dtoIds, userId);
