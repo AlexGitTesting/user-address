@@ -1,6 +1,7 @@
 package com.example.useraddresses.service;
 
 import com.example.useraddresses.dto.AddressDto;
+import com.example.useraddresses.dto.AddressedUserDto;
 import com.example.useraddresses.dto.CountryDto;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
@@ -11,6 +12,7 @@ import org.springframework.test.context.jdbc.Sql;
 import javax.persistence.EntityNotFoundException;
 import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import static org.junit.jupiter.api.Assertions.*;
 @Sql({"classpath:statements/insert_user.sql",
@@ -23,6 +25,8 @@ import static org.junit.jupiter.api.Assertions.*;
 class AddressServiceTest {
     @Autowired
     private AddressService addressService;
+    @Autowired
+    private UserService userService;
 
     @Test
     void createAddress() {
@@ -35,7 +39,7 @@ class AddressServiceTest {
                 .city("city")
                 .countryDto(countryDto)
                 .build();
-        final List<AddressDto> address = addressService.createAddress(List.of(addressDto), 100L);
+         assertDoesNotThrow(()->addressService.createAddress(List.of(addressDto), 100L));
     }
 
     @Test
@@ -55,8 +59,14 @@ class AddressServiceTest {
     @Test
     void deleteAddress() {
         final Set<Long> addressIds = Set.of(100L);
-        final Set<Long> deletedIds = addressService.deleteAddress(addressIds, 100L);
+        final long userId = 100L;
+        final Set<Long> deletedIds = addressService.deleteAddress(addressIds, userId);
         assertTrue(addressIds.containsAll(deletedIds));
+        final AddressedUserDto userDto = userService.getUser(userId);
+        assertNotNull(userDto);
+        final Set<Long> existedAddressIds = userDto.addresses().stream().map(AddressDto::getId).collect(Collectors.toSet());
+        assertFalse(existedAddressIds.isEmpty());
+        assertFalse(existedAddressIds.containsAll(deletedIds));
     }
 
     @Test
