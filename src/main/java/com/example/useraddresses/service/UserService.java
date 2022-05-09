@@ -1,6 +1,7 @@
 package com.example.useraddresses.service;
 
 import com.example.useraddresses.core.ValidationCustomException;
+import com.example.useraddresses.domain.User;
 import com.example.useraddresses.dto.AddressedUserDto;
 import com.example.useraddresses.dto.UserDto;
 import com.example.useraddresses.dto.UserModelDto;
@@ -17,12 +18,22 @@ import javax.persistence.EntityNotFoundException;
 @Service
 public interface UserService {
     UserDto createUser(UserDto dto) throws ValidationCustomException;
-    AddressedUserDto getUser(Long id);
-    Long deleteUser(Long id);
-    UserModelDto getUserForUpdate(Long id) throws EntityNotFoundException;
-    AddressedUserDto updateUser(UserDto dto) throws ValidationCustomException, EntityNotFoundException;
-    Page<UserDto>getFilteredUsers(UserQueryFilter filter) throws ValidationCustomException;
 
+    AddressedUserDto getUser(Long id);
+
+    Long deleteUser(Long id);
+
+    UserModelDto getUserForUpdate(Long id) throws EntityNotFoundException;
+
+    AddressedUserDto updateUser(UserDto dto) throws ValidationCustomException, EntityNotFoundException;
+
+    Page<UserDto> getFilteredUsers(UserQueryFilter filter) throws ValidationCustomException;
+
+    User getUserById(Long id) throws EntityNotFoundException;
+
+    boolean ifUserExists(final Long userId);
+
+    User saveUser(User user);
 
 
 }

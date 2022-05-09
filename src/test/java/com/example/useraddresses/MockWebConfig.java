@@ -1,4 +1,4 @@
-package com.example.useraddresses.web;
+package com.example.useraddresses;
 
 import com.example.useraddresses.service.EmailService;
 import org.mockito.Mockito;

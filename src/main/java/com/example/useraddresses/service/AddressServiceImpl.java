@@ -9,11 +9,11 @@ import com.example.useraddresses.domain.User;
 import com.example.useraddresses.dto.AddressDto;
 import com.example.useraddresses.service.converter.AddressConverter;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.MessageSource;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Transactional;
 
+import javax.persistence.EntityNotFoundException;
 import javax.validation.groups.Default;
 import java.util.*;
 
@@ -25,26 +25,26 @@ public class AddressServiceImpl implements AddressService {
     private final AddressRepository addressRepository;
     private final ValidationService validationService;
     private final AddressConverter addressConverter;
-    private final MessageSource messageSource;
+    private final UserService userService;
 
     @Autowired
     public AddressServiceImpl(final AddressRepository addressRepository,
                               final ValidationService validationService,
-                              final AddressConverter addressConverter, MessageSource messageSource) {
+                              final AddressConverter addressConverter,
+                              final UserService userService) {
         this.addressRepository = addressRepository;
         this.validationService = validationService;
         this.addressConverter = addressConverter;
-        this.messageSource = messageSource;
+        this.userService = userService;
     }
 
     @Override
     @Transactional
     public List<AddressDto> createAddress(List<AddressDto> dto, Long userId) throws ValidationCustomException {
-        // TODO: 14.02.2022 check if user exists validating if nam
-//        final HashMap<String, String> fields = new HashMap<>();
-//        fields.put("field","user.validation.wrong.address.ids");
-//        throw  new ValidationCustomException(fields);
         verifyAddressesGroup(dto, RequiredFieldsForCreation.class);
+        if (!userService.ifUserExists(userId)) {
+            throw new EntityNotFoundException("user Not found");// TODO: 17.02.2022 fill mess
+        }
         final User user = new User();
         user.setId(userId);
         final List<Address> addresses = dto.stream().map(addressConverter::convertToDomain).peek(address -> address.setUser(user)).collect(toList());

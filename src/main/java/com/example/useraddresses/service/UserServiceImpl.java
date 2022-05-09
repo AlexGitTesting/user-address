@@ -10,6 +10,8 @@ import com.example.useraddresses.service.converter.UserConverter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.CacheConfig;
+import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.CachePut;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.Page;
@@ -27,6 +29,7 @@ import static java.util.stream.Collectors.toSet;
 import static java.util.stream.Collectors.toUnmodifiableSet;
 
 @Service
+@CacheConfig(cacheNames = "users")
 public class UserServiceImpl implements UserService {
 
     private static Logger log = LoggerFactory.getLogger(UserServiceImpl.class);
@@ -59,7 +62,7 @@ public class UserServiceImpl implements UserService {
     @Transactional
     public UserDto createUser(UserDto dto) throws ValidationCustomException {
         validationService.validate(dto, "Validation UserDto before creating ");
-        final User saved=saveUser(userConverter.convertToDomain(dto));
+        final User saved = saveUser(userConverter.convertToDomain(dto));
         emailService.sendSimpleMessage(saved.getEmail(), "user.message.subject", "user.message.text");
         return userConverter.convertToDto(saved);
     }
@@ -74,6 +77,7 @@ public class UserServiceImpl implements UserService {
 
     @Override
     @Transactional
+    @CacheEvict(key ="#id" )
     public Long deleteUser(Long id) {
         userRepository.deleteById(id);
         return id;
@@ -112,12 +116,17 @@ public class UserServiceImpl implements UserService {
         return allUsers.map(userConverter::convertToDto);
     }
 
-    @Cacheable("users")
-    public User getUserById(Long id) {
+    @Cacheable(key ="#id")
+    public User getUserById(Long id) throws EntityNotFoundException {
         return userRepository.getUserById(id).orElseThrow(() -> new EntityNotFoundException("User not found"));
     }
 
-    @CachePut(value = "users")
+    @Cacheable(key ="#id")
+    public boolean ifUserExists(final Long id) {
+        return userRepository.existsById(id);
+    }
+
+    @CachePut(key = "#user.id")
     public User saveUser(User user) {
         return userRepository.save(user);
     }

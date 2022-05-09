@@ -26,6 +26,7 @@ public class AddressController {
     @ResponseStatus(HttpStatus.CREATED)
     @PostMapping(path = "/{id}/create.json", consumes = MediaType.APPLICATION_JSON_VALUE)
     List<AddressDto> createAddress(@RequestBody List<AddressDto> addresses, @PathVariable("id") final Long userId) {
+        // TODO: 17.02.2022 may be validate with beanvalidation
         if (addresses==null||addresses.isEmpty()||userId == null || userId < 1) throw  new ResponseStatusException(HttpStatus.BAD_REQUEST,"Invalid argument");
         return service.createAddress(addresses, userId);
 
