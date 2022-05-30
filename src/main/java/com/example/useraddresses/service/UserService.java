@@ -23,9 +23,9 @@ public interface UserService {
 
     Long deleteUser(Long id);
 
-    UserModelDto getUserForUpdate(Long id) throws EntityNotFoundException;
+    UserModelDto getUserProfileForUpdate(Long id) throws EntityNotFoundException;
 
-    AddressedUserDto updateUser(UserDto dto) throws ValidationCustomException, EntityNotFoundException;
+    AddressedUserDto updateUserProfile(UserDto dto) throws ValidationCustomException, EntityNotFoundException;
 
     Page<UserDto> getFilteredUsers(UserQueryFilter filter) throws ValidationCustomException;
 

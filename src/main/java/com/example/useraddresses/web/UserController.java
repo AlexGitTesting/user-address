@@ -51,14 +51,14 @@ public class UserController {
     @GetMapping(value = "/{id}/get-user-model.json")
     UserModelDto getUserForUpdate(@PathVariable final Long id) {
         if (id == null || id < 1) throw  new ResponseStatusException(HttpStatus.BAD_REQUEST,"Invalid id");
-        return userService.getUserForUpdate(id);
+        return userService.getUserProfileForUpdate(id);
     }
 
     @ResponseStatus(HttpStatus.OK)
     @PutMapping(value = "/update.json", consumes = MediaType.APPLICATION_JSON_VALUE)
     AddressedUserDto updateUser(@RequestBody UserDto dto) {
         if (dto.getId() == null || dto.getId() < 1) throw  new ResponseStatusException(HttpStatus.BAD_REQUEST,"User is  new");
-        return userService.updateUser(dto);
+        return userService.updateUserProfile(dto);
     }
 
     @ResponseStatus(HttpStatus.OK)

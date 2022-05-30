@@ -14,22 +14,23 @@ import org.springframework.cache.annotation.CacheConfig;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.CachePut;
 import org.springframework.cache.annotation.Cacheable;
+import org.springframework.context.annotation.Primary;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.persistence.EntityNotFoundException;
-import java.util.List;
 import java.util.Set;
 
-import static java.util.Collections.emptyList;
 import static java.util.Collections.emptySet;
 import static java.util.stream.Collectors.toSet;
 import static java.util.stream.Collectors.toUnmodifiableSet;
 
 @Service
 @CacheConfig(cacheNames = "users")
+@Primary
 public class UserServiceImpl implements UserService {
 
     private static Logger log = LoggerFactory.getLogger(UserServiceImpl.class);
@@ -85,22 +86,18 @@ public class UserServiceImpl implements UserService {
 
     @Override
     @Transactional(readOnly = true)
-    public UserModelDto getUserForUpdate(Long id) throws EntityNotFoundException {
+    public UserModelDto getUserProfileForUpdate(Long id) throws EntityNotFoundException {
         final User user = getUserById(id);
-        List<AddressDto> addresses = user.getAddresses().isEmpty()
-                ? emptyList()
-                : user.getAddresses().stream().map(addressConverter::convertToDto).toList();
-        return new UserModelDto(userConverter.convertToDto(user), addresses, countryService.getAllCountries());
+        return new UserModelDto(userConverter.convertToDto(user), countryService.getAllCountries());
     }
 
     @Override
-    @Transactional
-    // TODO: 14.02.2022 getonly ser
-    public AddressedUserDto updateUser(UserDto dto) throws ValidationCustomException, EntityNotFoundException {
+    @Transactional(isolation = Isolation.REPEATABLE_READ)
+    public AddressedUserDto updateUserProfile(UserDto dto) throws ValidationCustomException, EntityNotFoundException {
         validationService.validate(dto, "UserDto");
         final User user = getUserById(dto.getId());
         userConverter.convertToDomainTarget(dto, user);
-        final User saved = userRepository.save(user);
+        final User saved = saveUser(user);
         Set<AddressDto> addresses = saved.getAddresses().isEmpty()
                 ? emptySet()
                 : saved.getAddresses().stream().map(addressConverter::convertToDto).collect(toUnmodifiableSet());

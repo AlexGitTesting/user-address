@@ -1,7 +1,6 @@
 package com.example.useraddresses;
 
 import com.example.useraddresses.service.EmailService;
-import org.mockito.Mockito;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Primary;

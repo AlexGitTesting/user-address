@@ -1,6 +1,7 @@
 package com.example.useraddresses.service;
 
 import com.example.useraddresses.core.RequiredFieldsForCreation;
+import com.example.useraddresses.core.RequiredFieldsForUpdating;
 import com.example.useraddresses.core.ValidationCustomException;
 import com.example.useraddresses.dto.AddressDto;
 import com.example.useraddresses.dto.CountryDto;
@@ -60,14 +61,14 @@ class ValidationServiceTest {
     void validateAddressDtoWrongIdParam() {
         final CountryDto countryDto = CountryDto.builder().id(5L).name("updatedNameCountry").build();
         final AddressDto dto = AddressDto.builder()
-                .id(null)
+                .id(null)// must be not null
                 .flatNumber("updated12")
                 .houseNumber("updated12")
                 .street("updatedNameStreet")
                 .city("updatedName City")
                 .countryDto(countryDto)
                 .build();
-        assertThrowsExactly(ValidationCustomException.class,()->service.validate(dto,"AddressDto", RequiredFieldsForCreation.class));
+        assertThrowsExactly(ValidationCustomException.class,()->service.validate(dto,"AddressDto", RequiredFieldsForUpdating.class));
     }
     @Test
     void validateAddressDtoWrongIdParamNegativeValue() {

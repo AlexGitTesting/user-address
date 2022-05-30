@@ -16,6 +16,7 @@ import org.springframework.transaction.annotation.Transactional;
 import javax.persistence.EntityNotFoundException;
 import javax.validation.groups.Default;
 import java.util.*;
+import java.util.stream.Collectors;
 
 import static java.util.stream.Collectors.*;
 
@@ -40,24 +41,29 @@ public class AddressServiceImpl implements AddressService {
 
     @Override
     @Transactional
-    public List<AddressDto> createAddress(List<AddressDto> dto, Long userId) throws ValidationCustomException {
+    public Set<Long> createAddress(List<AddressDto> dto, Long userId) throws ValidationCustomException {
         verifyAddressesGroup(dto, RequiredFieldsForCreation.class);
         if (!userService.ifUserExists(userId)) {
-            throw new EntityNotFoundException("user Not found");// TODO: 17.02.2022 fill mess
+            throw new EntityNotFoundException(String.format("User by existing id - %s not found",userId));
         }
         final User user = new User();
         user.setId(userId);
-        final List<Address> addresses = dto.stream().map(addressConverter::convertToDomain).peek(address -> address.setUser(user)).collect(toList());
-        final List<Address> savedAddresses = addressRepository.saveAll(addresses);
-        return savedAddresses.stream().map(addressConverter::convertToDto).collect(toList());
+        final List<Address> addresses = dto.stream()
+                .map(addressConverter::convertToDomain)
+                .peek(address -> address.setUser(user))
+                .collect(toList());
+        return addressRepository.saveAll(addresses)
+                .stream()
+                .map(Address::getId)
+                .collect(Collectors.toSet());
     }
 
     @Override
     @Transactional
     public Set<Long> deleteAddress(Set<Long> addressIds, Long userId) {
         final Set<Long> addressIdByUserId = addressRepository.getAddressIdsByUserId(userId);
-        if (!addressIdByUserId.containsAll(addressIds))
-            throw new IllegalStateException("user.validation.wrong.address.ids");
+        if (!addressIdByUserId.containsAll(addressIds)){
+            throw new IllegalStateException("user.validation.wrong.address.ids");}
         addressRepository.deleteAllById(addressIds);
         return addressIds;
     }
@@ -81,7 +87,7 @@ public class AddressServiceImpl implements AddressService {
             final Address currentAddress = groupedAddresses.get(addressDto.getId()).stream().findFirst().orElseThrow();
             addressConverter.convertToDomainTarget(addressDto, currentAddress);
         });
-       return  addressRepository.saveAll(userAddressesByIdIn).stream().map(addressConverter::convertToDto).collect(toSet());
+        return addressRepository.saveAll(userAddressesByIdIn).stream().map(addressConverter::convertToDto).collect(toSet());
     }
 
     private void verifyAddressesGroup(Collection<AddressDto> addresses, Class<? extends Default> group) {

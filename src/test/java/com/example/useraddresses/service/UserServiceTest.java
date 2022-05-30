@@ -1,19 +1,14 @@
 package com.example.useraddresses.service;
 
 import com.example.useraddresses.dto.*;
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.data.domain.Page;
 import org.springframework.test.context.jdbc.Sql;
 
-import javax.validation.constraints.AssertTrue;
-import javax.xml.bind.ValidationException;
-import java.util.Collections;
 import java.util.List;
 import java.util.Set;
-import java.util.stream.Collectors;
 
 import static java.util.stream.Collectors.*;
 import static org.junit.jupiter.api.Assertions.*;
@@ -67,16 +62,15 @@ class UserServiceTest {
 
     @Test
     void getUserForUpdate() {
-        final UserModelDto userForUpdate = userService.getUserForUpdate(100L);
+        final UserModelDto userForUpdate = userService.getUserProfileForUpdate(100L);
         assertEquals(100L, userForUpdate.userDto().getId());
-        assertFalse(userForUpdate.userAddresses().isEmpty());
         assertFalse(userForUpdate.allExistedCountries().isEmpty());
     }
 
     @Test
     void updateUser() {
         final UserDto newUser = UserDto.builder().id(100L).firstname("firstname").email("newEmail@jkhjh.com").lastname("new last name").build();
-        final AddressedUserDto addressedUserDto = userService.updateUser(newUser);
+        final AddressedUserDto addressedUserDto = userService.updateUserProfile(newUser);
         final UserDto userDto = addressedUserDto.userDto();
         assertEquals(userDto.getId(),newUser.getId());
         assertEquals(userDto.getEmail(),newUser.getEmail());
