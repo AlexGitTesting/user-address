@@ -26,25 +26,25 @@ public class AddressServiceImpl implements AddressService {
     private final AddressRepository addressRepository;
     private final ValidationService validationService;
     private final AddressConverter addressConverter;
-    private final UserService userService;
+    private final CacheableUserService cacheableUserService;
 
     @Autowired
     public AddressServiceImpl(final AddressRepository addressRepository,
                               final ValidationService validationService,
                               final AddressConverter addressConverter,
-                              final UserService userService) {
+                              final CacheableUserService cacheableUserService) {
         this.addressRepository = addressRepository;
         this.validationService = validationService;
         this.addressConverter = addressConverter;
-        this.userService = userService;
+        this.cacheableUserService = cacheableUserService;
     }
 
     @Override
     @Transactional
     public Set<Long> createAddress(List<AddressDto> dto, Long userId) throws ValidationCustomException {
         verifyAddressesGroup(dto, RequiredFieldsForCreation.class);
-        if (!userService.ifUserExists(userId)) {
-            throw new EntityNotFoundException(String.format("User by existing id - %s not found",userId));
+        if (!cacheableUserService.ifUserExists(userId)) {
+            throw new EntityNotFoundException(String.format("User by existing id - %s not found", userId));
         }
         final User user = new User();
         user.setId(userId);
@@ -62,8 +62,9 @@ public class AddressServiceImpl implements AddressService {
     @Transactional
     public Set<Long> deleteAddress(Set<Long> addressIds, Long userId) {
         final Set<Long> addressIdByUserId = addressRepository.getAddressIdsByUserId(userId);
-        if (!addressIdByUserId.containsAll(addressIds)){
-            throw new IllegalStateException("user.validation.wrong.address.ids");}
+        if (!addressIdByUserId.containsAll(addressIds)) {
+            throw new IllegalStateException("user.validation.wrong.address.ids");
+        }
         addressRepository.deleteAllById(addressIds);
         return addressIds;
     }

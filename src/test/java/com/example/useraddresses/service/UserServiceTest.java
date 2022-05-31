@@ -8,10 +8,14 @@ import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentMatcher;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.mock.mockito.MockReset;
 import org.springframework.boot.test.mock.mockito.SpyBean;
 import org.springframework.data.domain.Page;
+import org.springframework.test.annotation.DirtiesContext;
+import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.jdbc.Sql;
 
+import javax.persistence.EntityNotFoundException;
 import java.util.Collections;
 import java.util.List;
 import java.util.Set;
@@ -27,13 +31,15 @@ import static org.mockito.Mockito.*;
         "classpath:statements/truncate_user.sql",
         "classpath:statements/truncate_address.sql"})
 @SpringBootTest
+@TestPropertySource(properties = "logging.level.org.springframework.cache=trace")
+@DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
 class UserServiceTest {
 
     @Autowired
     private UserService userService;
-    @SpyBean
+    @SpyBean(reset = MockReset.BEFORE)
     private ValidationService validationService;
-    @SpyBean
+    @SpyBean(reset = MockReset.BEFORE)
     private UserRepository userRepository;
 
     @Test
@@ -76,9 +82,10 @@ class UserServiceTest {
 
     @Test
     void getUser() {
-        final AddressedUserDto model = userService.getUser(100L);
+        final long id = 100L;
+        final AddressedUserDto model = userService.getUser(id);
         final UserDto user = model.userDto();
-        assertEquals(user.getId().orElseThrow(), 100L);
+        assertEquals(user.getId().orElseThrow(), id);
         assertEquals(user.getFirstname(), "First name");
         assertEquals(user.getPatronymic(), "Patronymic");
         final Set<AddressDto> addresses = model.addresses();
@@ -88,16 +95,29 @@ class UserServiceTest {
         assertFalse(addresses.stream().map(a -> a.getCountryDto().getId()).collect(toSet()).contains(45L));
 
     }
+
     @Test
-    void getUserCacheable(){
-        assertDoesNotThrow(()->userService.getUser(100L));
-        userService.getUser(100L);
-        verify(userRepository,atLeastOnce()).getUserById(eq(100L));
+    void getUserCacheable() {
+        final long id = 100L;
+        assertDoesNotThrow(() -> userService.getUser(id));
+        userService.getUser(id);
+        verify(userRepository, only()).getUserById(eq(id));
+    }
+
+    @Test
+    void getUserNotFound() {
+        final long id = 100L;
+        doThrow(EntityNotFoundException.class).when(userRepository).getUserById(id);
+        assertThrows(EntityNotFoundException.class, () -> userService.getUser(eq(id)));
     }
 
     @Test
     void deleteUser() {
-        assertDoesNotThrow(() -> userService.deleteUser(100L));
+        final long id = 100L;
+        userService.getUser(id);
+        assertDoesNotThrow(() -> userService.deleteUser(id));
+        assertThrows(EntityNotFoundException.class, () -> userService.getUser(id));
+        verify(userRepository, times(2)).getUserById(eq(id));
     }
 
     @Test
@@ -109,12 +129,15 @@ class UserServiceTest {
 
     @Test
     void updateUser() {
-        final UserDto newUser = UserDto.builder().id(100L).firstname("firstname").email("newEmail@jkhjh.com").lastname("new last name").build();
+        final long id = 100L;
+        final UserDto newUser = UserDto.builder().id(id).firstname("firstname").email("newEmail@jkhjh.com").lastname("new last name").build();
         final AddressedUserDto addressedUserDto = userService.updateUserProfile(newUser);
         final UserDto userDto = addressedUserDto.userDto();
         assertEquals(userDto.getId(), newUser.getId());
         assertEquals(userDto.getEmail(), newUser.getEmail());
         assertEquals(userDto.getLastname(), userDto.getLastname());
+        userService.getUser(id);
+        verify(userRepository, times(1)).getUserById(id);
     }
 
     @Test

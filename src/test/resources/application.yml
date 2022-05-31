@@ -21,4 +21,5 @@ logging:
     sql: info
     root: info
     web: debug
-    org.springframework.cache: trace
+    com.example.useraddresses.service.CacheableUserServiceImpl: debug
+
