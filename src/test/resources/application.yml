@@ -21,3 +21,4 @@ logging:
     sql: info
     root: info
     web: debug
+    org.springframework.cache: trace

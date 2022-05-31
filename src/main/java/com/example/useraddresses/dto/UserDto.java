@@ -8,6 +8,8 @@ import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.Size;
 import java.io.Serial;
 import java.io.Serializable;
+import java.util.Objects;
+import java.util.Optional;
 
 /**
  * Represents dto for user
@@ -84,8 +86,8 @@ public final class UserDto implements Serializable {
         }
     }
 
-    public Long getId() {
-        return id;
+    public Optional<Long> getId() {
+        return Optional.ofNullable(id);
     }
 
     public String getFirstname() {
@@ -104,4 +106,17 @@ public final class UserDto implements Serializable {
         return email;
     }
 
+
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof UserDto userDto)) return false;
+        return Objects.equals(getId(), userDto.getId()) && getFirstname().equals(userDto.getFirstname()) && getLastname().equals(userDto.getLastname()) && getPatronymic().equals(userDto.getPatronymic()) && getEmail().equals(userDto.getEmail());
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(getId(), getFirstname(), getLastname(), getPatronymic(), getEmail());
+    }
 }

@@ -11,12 +11,14 @@ import org.mapstruct.MappingTarget;
 public interface UserConverter {
     @Mapping(target = "createdDate", ignore = true)
     @Mapping(target = "modifiedDate", ignore = true)
-    @Mapping( target = "addresses",ignore = true)
+    @Mapping(target = "addresses", ignore = true)
+    @Mapping(target = "id", expression = "java(source.getId().orElse(null))")
     User convertToDomain(UserDto source);
 
     @InheritInverseConfiguration(name = "convertToDomain")
     UserDto convertToDto(User source);
 
     @Mapping(target = "addresses", ignore = true)
+    @Mapping(target = "id", expression = "java(source.getId().orElse(null))")
     void convertToDomainTarget(UserDto source, @MappingTarget User target);
 }

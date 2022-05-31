@@ -78,7 +78,7 @@ public class UserServiceImpl implements UserService {
 
     @Override
     @Transactional
-    @CacheEvict(key ="#id" )
+    @CacheEvict(key = "#id")
     public Long deleteUser(Long id) {
         userRepository.deleteById(id);
         return id;
@@ -95,7 +95,7 @@ public class UserServiceImpl implements UserService {
     @Transactional(isolation = Isolation.REPEATABLE_READ)
     public AddressedUserDto updateUserProfile(UserDto dto) throws ValidationCustomException, EntityNotFoundException {
         validationService.validate(dto, "UserDto");
-        final User user = getUserById(dto.getId());
+        final User user = getUserById(dto.getId().orElseThrow());
         userConverter.convertToDomainTarget(dto, user);
         final User saved = saveUser(user);
         Set<AddressDto> addresses = saved.getAddresses().isEmpty()
@@ -113,13 +113,15 @@ public class UserServiceImpl implements UserService {
         return allUsers.map(userConverter::convertToDto);
     }
 
-    @Cacheable(key ="#id")
+    @Cacheable(key = "#id")
     public User getUserById(Long id) throws EntityNotFoundException {
+        log.debug("cache doesn`t work");
         return userRepository.getUserById(id).orElseThrow(() -> new EntityNotFoundException("User not found"));
     }
 
-    @Cacheable(key ="#id")
+    @Cacheable(key = "#id")
     public boolean ifUserExists(final Long id) {
+        log.debug("cache doesn`t work");
         return userRepository.existsById(id);
     }
 

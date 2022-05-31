@@ -9,6 +9,7 @@ class UserConverterTest {
 
     @Test
     void convertToDomain() {
+        // FIXME: 31.05.2022 look for optional
     }
 
     @Test
