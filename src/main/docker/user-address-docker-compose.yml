@@ -1,0 +1,9 @@
+version: '2.2'
+services:
+  user-address-db:
+    restart: always
+    image: postgres
+    ports:
+      - "127.0.0.1:5438:5432"
+    env_file:
+      - user-address-db.env

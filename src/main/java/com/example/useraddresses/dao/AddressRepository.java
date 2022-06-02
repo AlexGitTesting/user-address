@@ -1,6 +1,7 @@
 package com.example.useraddresses.dao;
 
 import com.example.useraddresses.domain.Address;
+import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.jpa.repository.QueryHints;
@@ -12,8 +13,12 @@ import java.util.Set;
 
 import static org.hibernate.jpa.QueryHints.HINT_READONLY;
 
+/**
+ * Repository to work with {@link Address} entity.
+ *
+ * @author Alexandr Yefremov
+ */
 @Repository
-// TODO: 14.02.2022 fill
 public interface AddressRepository extends JpaRepository<Address, Long> {
 
     @QueryHints(@QueryHint(name = HINT_READONLY, value = "true"))
@@ -21,8 +26,7 @@ public interface AddressRepository extends JpaRepository<Address, Long> {
     Set<Long> getAddressIdsByUserId(@Param("userId") Long userId);
 
 
-
-    @Query("select a from Address as a where a.user.id=:userId and a.id in :addressIds")
-        // TODO: 14.02.2022 country is eager check
+    @EntityGraph(attributePaths = {"country"}, type = EntityGraph.EntityGraphType.FETCH)
+    @Query("select a from #{#entityName} as a where a.user.id=:userId and a.id in :addressIds ")
     Set<Address> findAddressesByUserIdIn(@Param("addressIds") Set<Long> addressIds, @Param("userId") Long userId);
 }

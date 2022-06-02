@@ -102,13 +102,16 @@ public class Address extends AuditableEntity {
                 && this.getCountry().getId().equals(another.getCountry().getId());
     }
 
+    /**
+     * Be careful compare users only by id, because LazyInitializationException be thrown
+     */
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o.getClass() != this.getClass()) return false;
         if (!super.equals(o)) return false;
         Address address = (Address) o;
-        return Objects.equals(getUser(), address.getUser())
+        return Objects.equals(getUser().getId(), address.getUser().getId())
                 && Objects.equals(getCity(), address.getCity())
                 && Objects.equals(getStreet(), address.getStreet())
                 && Objects.equals(getHouseNumber(), address.getHouseNumber())
@@ -118,7 +121,7 @@ public class Address extends AuditableEntity {
 
     @Override
     public int hashCode() {
-        return Objects.hash(super.hashCode(), getUser(), getCity(), getStreet(), getHouseNumber(), getFlatNumber(), getCountry());
+        return Objects.hash(super.hashCode(), getUser().getId(), getCity(), getStreet(), getHouseNumber(), getFlatNumber(), getCountry());
     }
 
     @Override

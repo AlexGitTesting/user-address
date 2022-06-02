@@ -3,3 +3,8 @@ logging:
     sql: info
     root: info
     web: debug
+spring:
+  datasource:
+    url: jdbc:postgresql://localhost:5438/user_address_db
+    username: test_user
+    password: test_password
