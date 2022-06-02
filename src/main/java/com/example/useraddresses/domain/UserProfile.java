@@ -5,29 +5,49 @@ import javax.persistence.*;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
-import static java.util.Objects.requireNonNullElse;
+import static java.util.Objects.hash;
 
 /**
- * Represents User entity.
+ * Represents UserProfile entity.
  *
  * @author Alexandr Yefremov
  * @see AuditableEntity
  */
 @Entity
 @Table(name = "user_profile")
-public class User extends AuditableEntity {
+public class UserProfile extends AuditableEntity {
     @Column(name = "first_name", nullable = false)
     private String firstname;
     @Column(name = "last_name", nullable = false)
     private String lastname;
     @Column(name = "patronymic")
-    private String patronymic;
+    private String patronymic; // TODO: 02.06.2022 optional
     @Column(name = "email", nullable = false, unique = true)
     private String email;
     // TODO: 10.02.2022 batchsize
-    @OneToMany(mappedBy = "user", fetch = FetchType.LAZY,  cascade = {CascadeType.REMOVE})
+    @OneToMany(mappedBy = "user", fetch = FetchType.LAZY, cascade = {CascadeType.REMOVE})
     private List<Address> addresses;
+
+    public UserProfile() {
+    }
+
+    public UserProfile(String firstname, String lastname, String patronymic, String email, List<Address> addresses) {
+        this.firstname = firstname;
+        this.lastname = lastname;
+        this.patronymic = patronymic;
+        this.email = email;
+        this.addresses = addresses;
+    }
+
+    public UserProfile(Long id, LocalDateTime createdDate, LocalDateTime modifiedDate, String firstname, String lastname, String patronymic, String email) {
+        super(id, createdDate, modifiedDate);
+        this.firstname = firstname;
+        this.lastname = lastname;
+        this.patronymic = patronymic;
+        this.email = email;
+    }
 
     public String getFirstname() {
         return firstname;
@@ -68,15 +88,6 @@ public class User extends AuditableEntity {
         return addresses;
     }
 
-    public String getFullName() {
-        final StringBuilder builder = new StringBuilder();
-        return builder.append(getFirstname())
-                .append(" ")
-                .append(requireNonNullElse(getPatronymic(), ""))
-                .append(" ")
-                .append(getLastname()).toString();
-    }
-
     public void setAddresses(List<Address> address) {
         this.addresses = address;
         address.forEach(address1 -> address1.setUser(this));
@@ -90,43 +101,26 @@ public class User extends AuditableEntity {
         address.setUser(this);
     }
 
-    public boolean addAddresses(List<Address> address) {
-        address.forEach(address1 -> address1.setUser(this));
-        return getAddresses().addAll(address);
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof UserProfile that)) return false;
+        if (!super.equals(o)) return false;
+        return getFirstname().equals(that.getFirstname())
+                && getLastname().equals(that.getLastname())
+                && Objects.equals(getPatronymic(), that.getPatronymic())
+                && getEmail().equals(that.getEmail())
+                && Objects.equals(getAddresses(), that.getAddresses());
     }
 
-    public void removeAddress(final Address address) {
-        if (getAddresses().contains(address)) {
-            getAddresses().remove(address);
-            address.setUser(null);
-        } else {
-            // TODO: 10.02.2022 buider or local message
-            throw new IllegalArgumentException("Current Address: id " + address.getId() + " is not contained in current User: id " + getId() + ", name: " + getFullName());
-        }
-    }
-
-    public User() {
-    }
-
-    public User(String firstname, String lastname, String patronymic, String email, List<Address> addresses) {
-        this.firstname = firstname;
-        this.lastname = lastname;
-        this.patronymic = patronymic;
-        this.email = email;
-        this.addresses = addresses;
-    }
-
-    public User(Long id, LocalDateTime createdDate, LocalDateTime modifiedDate, String firstname, String lastname, String patronymic, String email) {
-        super(id, createdDate, modifiedDate);
-        this.firstname = firstname;
-        this.lastname = lastname;
-        this.patronymic = patronymic;
-        this.email = email;
+    @Override
+    public int hashCode() {
+        return hash(super.hashCode(), getFirstname(), getLastname(), getPatronymic(), getEmail(), getAddresses());
     }
 
     @Override
     public String toString() {
-        return "User{" +
+        return "UserProfile{" +
                 "firstname='" + firstname + '\'' +
                 ", lastname='" + lastname + '\'' +
                 ", patronymic='" + patronymic + '\'' +

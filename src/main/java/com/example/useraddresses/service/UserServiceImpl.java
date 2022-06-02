@@ -3,7 +3,7 @@ package com.example.useraddresses.service;
 import com.example.useraddresses.core.ValidationCustomException;
 import com.example.useraddresses.dao.UserRepository;
 import com.example.useraddresses.dao.UserSpecification;
-import com.example.useraddresses.domain.User;
+import com.example.useraddresses.domain.UserProfile;
 import com.example.useraddresses.dto.*;
 import com.example.useraddresses.service.converter.AddressConverter;
 import com.example.useraddresses.service.converter.UserConverter;
@@ -59,7 +59,7 @@ public class UserServiceImpl implements UserService {
     @Transactional
     public UserDto createUser(UserDto dto) throws ValidationCustomException {
         validationService.validate(dto, "Validation UserDto before creating ");
-        final User saved = cacheableUserService.saveUser(userConverter.convertToDomain(dto));
+        final UserProfile saved = cacheableUserService.saveUser(userConverter.convertToDomain(dto));
         emailService.sendSimpleMessage(saved.getEmail(), "user.message.subject", "user.message.text");
         return userConverter.convertToDto(saved);
     }
@@ -68,7 +68,7 @@ public class UserServiceImpl implements UserService {
     @Override
     @Transactional(readOnly = true)
     public AddressedUserDto getUser(Long id) {
-        final User user = cacheableUserService.getUserById(id);
+        final UserProfile user = cacheableUserService.getUserById(id);
         return new AddressedUserDto(userConverter.convertToDto(user), user.getAddresses().stream().map(addressConverter::convertToDto).collect(toSet()));
     }
 
@@ -82,7 +82,7 @@ public class UserServiceImpl implements UserService {
     @Override
     @Transactional(readOnly = true)
     public UserModelDto getUserProfileForUpdate(Long id) throws EntityNotFoundException {
-        final User user = cacheableUserService.getUserById(id);
+        final UserProfile user = cacheableUserService.getUserById(id);
         return new UserModelDto(userConverter.convertToDto(user), countryService.getAllCountries());
     }
 
@@ -90,9 +90,9 @@ public class UserServiceImpl implements UserService {
     @Transactional(isolation = Isolation.REPEATABLE_READ)
     public AddressedUserDto updateUserProfile(UserDto dto) throws ValidationCustomException, EntityNotFoundException {
         validationService.validate(dto, "UserDto");
-        final User user = cacheableUserService.getUserById(dto.getId().orElseThrow());
+        final UserProfile user = cacheableUserService.getUserById(dto.getId().orElseThrow());
         userConverter.convertToDomainTarget(dto, user);
-        final User saved = cacheableUserService.saveUser(user);
+        final UserProfile saved = cacheableUserService.saveUser(user);
         Set<AddressDto> addresses = saved.getAddresses().isEmpty()
                 ? emptySet()
                 : saved.getAddresses().stream().map(addressConverter::convertToDto).collect(toUnmodifiableSet());
@@ -103,7 +103,7 @@ public class UserServiceImpl implements UserService {
     @Transactional(readOnly = true)
     public Page<UserDto> getFilteredUsers(UserQueryFilter filter) throws ValidationCustomException {
         validationService.validate(filter, "UserQueryFilter");
-        final Page<User> allUsers = userRepository.findAll(specification.getByFilter(filter), PageRequest.of(filter.getPage(), filter.getLimit()));
+        final Page<UserProfile> allUsers = userRepository.findAll(specification.getByFilter(filter), PageRequest.of(filter.getPage(), filter.getLimit()));
         return allUsers.map(userConverter::convertToDto);
     }
 

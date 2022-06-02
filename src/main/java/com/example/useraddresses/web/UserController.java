@@ -29,7 +29,8 @@ public class UserController {
     @ResponseStatus(HttpStatus.CREATED)
     @PostMapping(path = "/create.json", consumes = MediaType.APPLICATION_JSON_VALUE)
     UserDto createUser(@RequestBody UserDto dto) {
-        if (dto.getId().isPresent())throw  new ResponseStatusException(HttpStatus.BAD_REQUEST,"User is not new");
+        if (dto.getId().isPresent())
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "UserProfile must be new");
         return userService.createUser(dto);
     }
 
@@ -57,7 +58,8 @@ public class UserController {
     @ResponseStatus(HttpStatus.OK)
     @PutMapping(value = "/update.json", consumes = MediaType.APPLICATION_JSON_VALUE)
     AddressedUserDto updateUser(@RequestBody UserDto dto) {
-        if (dto.getId().isEmpty()|| dto.getId().get() < 1) throw  new ResponseStatusException(HttpStatus.BAD_REQUEST,"User is  new");
+        if (dto.getId().isEmpty() || dto.getId().get() < 1)
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "UserProfile must be not new");
         return userService.updateUserProfile(dto);
     }
 

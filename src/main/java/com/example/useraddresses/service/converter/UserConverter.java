@@ -1,6 +1,6 @@
 package com.example.useraddresses.service.converter;
 
-import com.example.useraddresses.domain.User;
+import com.example.useraddresses.domain.UserProfile;
 import com.example.useraddresses.dto.UserDto;
 import org.mapstruct.InheritInverseConfiguration;
 import org.mapstruct.Mapper;
@@ -13,12 +13,12 @@ public interface UserConverter {
     @Mapping(target = "modifiedDate", ignore = true)
     @Mapping(target = "addresses", ignore = true)
     @Mapping(target = "id", expression = "java(source.getId().orElse(null))")
-    User convertToDomain(UserDto source);
+    UserProfile convertToDomain(UserDto source);
 
     @InheritInverseConfiguration(name = "convertToDomain")
-    UserDto convertToDto(User source);
+    UserDto convertToDto(UserProfile source);
 
     @Mapping(target = "addresses", ignore = true)
     @Mapping(target = "id", expression = "java(source.getId().orElse(null))")
-    void convertToDomainTarget(UserDto source, @MappingTarget User target);
+    void convertToDomainTarget(UserDto source, @MappingTarget UserProfile target);
 }

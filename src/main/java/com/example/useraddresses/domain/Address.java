@@ -1,9 +1,10 @@
 package com.example.useraddresses.domain;
 
 import javax.persistence.*;
+import java.util.Objects;
 
 /**
- * Represent address entity.
+ * Represents address entity.
  *
  * @author Alexandr Yefremov
  * @see AuditableEntity
@@ -11,9 +12,9 @@ import javax.persistence.*;
 @Entity
 @Table(name = "address")
 public class Address extends AuditableEntity {
-    @ManyToOne(fetch = FetchType.LAZY,optional = false) // TODO: 10.02.2022  cascade type merge
+    @ManyToOne(fetch = FetchType.LAZY, optional = false) // TODO: 10.02.2022  cascade type merge
     @JoinColumn(name = "user_id", nullable = false)
-    private User user;
+    private UserProfile user;
     @Column(name = "city", nullable = false)
     private String city;
     @Column(name = "street")
@@ -29,7 +30,7 @@ public class Address extends AuditableEntity {
     public Address() {
     }
 
-    public Address(User user, String city, String street, String houseNumber, String flatNumber, Country country) {
+    public Address(UserProfile user, String city, String street, String houseNumber, String flatNumber, Country country) {
         this.user = user;
         this.city = city;
         this.street = street;
@@ -38,11 +39,12 @@ public class Address extends AuditableEntity {
         this.country = country;
     }
 
-    public User getUser() {
+    // TODO: 01.06.2022 replace getters with optional return value for flat number
+    public UserProfile getUser() {
         return user;
     }
 
-    public void setUser(User user) {
+    public void setUser(UserProfile user) {
         this.user = user;
     }
 
@@ -86,14 +88,37 @@ public class Address extends AuditableEntity {
         this.country = country;
     }
 
-    // TODO: 10.02.2022 equals hash
-// TODO: 12.02.2022 description 
-    public boolean isMatchAddress(final Address another)  {
+    /**
+     * Compare addresses' fields to prevent duplication.
+     *
+     * @param another address
+     * @return if they same or not
+     */
+    public boolean isMatchAddress(final Address another) {
         return this.getCity().equalsIgnoreCase(another.getCity())
                 && this.getStreet().equalsIgnoreCase(another.getStreet())
                 && this.getHouseNumber().equalsIgnoreCase(another.getHouseNumber())
                 && this.getFlatNumber().equalsIgnoreCase(another.getFlatNumber())
                 && this.getCountry().getId().equals(another.getCountry().getId());
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o.getClass() != this.getClass()) return false;
+        if (!super.equals(o)) return false;
+        Address address = (Address) o;
+        return Objects.equals(getUser(), address.getUser())
+                && Objects.equals(getCity(), address.getCity())
+                && Objects.equals(getStreet(), address.getStreet())
+                && Objects.equals(getHouseNumber(), address.getHouseNumber())
+                && Objects.equals(getFlatNumber(), address.getFlatNumber())
+                && Objects.equals(getCountry(), address.getCountry());
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(super.hashCode(), getUser(), getCity(), getStreet(), getHouseNumber(), getFlatNumber(), getCountry());
     }
 
     @Override

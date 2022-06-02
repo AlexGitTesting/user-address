@@ -5,7 +5,7 @@ import com.example.useraddresses.core.RequiredFieldsForUpdating;
 import com.example.useraddresses.core.ValidationCustomException;
 import com.example.useraddresses.dao.AddressRepository;
 import com.example.useraddresses.domain.Address;
-import com.example.useraddresses.domain.User;
+import com.example.useraddresses.domain.UserProfile;
 import com.example.useraddresses.dto.AddressDto;
 import com.example.useraddresses.service.converter.AddressConverter;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -44,9 +44,9 @@ public class AddressServiceImpl implements AddressService {
     public Set<Long> createAddress(List<AddressDto> dto, Long userId) throws ValidationCustomException {
         verifyAddressesGroup(dto, RequiredFieldsForCreation.class);
         if (!cacheableUserService.ifUserExists(userId)) {
-            throw new EntityNotFoundException(String.format("User by existing id - %s not found", userId));
+            throw new EntityNotFoundException(String.format("UserProfile by existing id - %s not found", userId));
         }
-        final User user = new User();
+        final UserProfile user = new UserProfile();
         user.setId(userId);
         final List<Address> addresses = dto.stream()
                 .map(addressConverter::convertToDomain)

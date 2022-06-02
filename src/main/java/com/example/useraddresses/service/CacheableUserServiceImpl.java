@@ -1,7 +1,7 @@
 package com.example.useraddresses.service;
 
 import com.example.useraddresses.dao.UserRepository;
-import com.example.useraddresses.domain.User;
+import com.example.useraddresses.domain.UserProfile;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.cache.annotation.CacheConfig;
@@ -24,9 +24,9 @@ public class CacheableUserServiceImpl implements CacheableUserService {
 
     @Override
     @Cacheable(key = "#id")
-    public User getUserById(Long id) throws EntityNotFoundException {
+    public UserProfile getUserById(Long id) throws EntityNotFoundException {
         log.debug("method- getUserById; cache does not work");
-        return userRepository.getUserById(id).orElseThrow(() -> new EntityNotFoundException("User not found"));
+        return userRepository.getUserById(id).orElseThrow(() -> new EntityNotFoundException("UserProfile not found"));
     }
 
     @Override
@@ -38,7 +38,7 @@ public class CacheableUserServiceImpl implements CacheableUserService {
 
     @Override
     @CachePut(key = "#user.id")
-    public User saveUser(User user) {
+    public UserProfile saveUser(UserProfile user) {
         return userRepository.save(user);
     }
 

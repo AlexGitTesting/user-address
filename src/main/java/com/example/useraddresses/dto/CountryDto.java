@@ -8,6 +8,8 @@ import javax.validation.constraints.NotNull;
 import java.io.Serial;
 import java.io.Serializable;
 
+import static java.util.Objects.hash;
+
 /**
  * Represents dto for the name entity.
  *
@@ -18,7 +20,7 @@ public final class CountryDto implements Serializable {
     @Serial
     private static final long serialVersionUID = 42L;
     @NotNull
-    @Min(value = 1)// TODO: 14.02.2022 message
+    @Min(value = 1, message = "Country id must be not null and bigger then 0")
     private final Long id;
     private final String name;
 
@@ -66,5 +68,17 @@ public final class CountryDto implements Serializable {
                 "id=" + id +
                 ", name='" + name + '\'' +
                 '}';
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof CountryDto that)) return false;
+        return getId().equals(that.getId()) && getName().equals(that.getName());
+    }
+
+    @Override
+    public int hashCode() {
+        return hash(getId(), getName());
     }
 }

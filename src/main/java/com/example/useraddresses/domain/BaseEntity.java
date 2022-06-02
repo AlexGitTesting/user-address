@@ -3,7 +3,6 @@ package com.example.useraddresses.domain;
 import javax.persistence.*;
 import java.io.Serial;
 import java.io.Serializable;
-import java.util.Objects;
 
 /**
  * Class provides id and version to all related entities.
@@ -20,6 +19,13 @@ public abstract class BaseEntity implements Serializable {
     @Version
     private long version;
 
+    public BaseEntity() {
+    }
+
+    public BaseEntity(final Long id) {
+        this.id = id;
+    }
+
     public Long getId() {
         return id;
     }
@@ -28,36 +34,10 @@ public abstract class BaseEntity implements Serializable {
         this.id = id;
     }
 
-    public BaseEntity() {
-    }
-
-    public BaseEntity(final Long id) {
-        this.id = id;
-    }
-
-//    @Override
-//    public boolean equals(Object o) {
-//        if (this == o) return true;
-//        if (o == null || this.getClass() != o.getClass()) return false;
-//
-//        BaseEntity that = (BaseEntity) o;
-//
-//        return Objects.equals(id, that.getId());
-//    }
-//
-//    @Override
-//    public int hashCode() {
-//        return Objects.hash(id);
-//    }
-
-
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
-        if (!(o instanceof BaseEntity)) return false;
-
-        BaseEntity that = (BaseEntity) o;
-
+        if (!(o instanceof BaseEntity that)) return false;
         return getId() != null ? getId().equals(that.getId()) : that.getId() == null;
     }
 

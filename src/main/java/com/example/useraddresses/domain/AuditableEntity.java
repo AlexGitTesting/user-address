@@ -8,6 +8,7 @@ import javax.persistence.Column;
 import javax.persistence.EntityListeners;
 import javax.persistence.MappedSuperclass;
 import java.time.LocalDateTime;
+import java.util.Objects;
 
 /**
  * Abstract class to hold audit data.
@@ -27,12 +28,7 @@ public abstract class AuditableEntity extends BaseEntity {
     @Column(name = "modified_date", nullable = false)
     private LocalDateTime modifiedDate;
 
-    public LocalDateTime getCreatedDate() {
-        return createdDate;
-    }
-
-    public LocalDateTime getModifiedDate() {
-        return modifiedDate;
+    public AuditableEntity() {
     }
 
     public AuditableEntity(Long id) {
@@ -45,7 +41,26 @@ public abstract class AuditableEntity extends BaseEntity {
         this.modifiedDate = modifiedDate;
     }
 
-    public AuditableEntity() {
+    public LocalDateTime getCreatedDate() {
+        return createdDate;
+    }
+
+    public LocalDateTime getModifiedDate() {
+        return modifiedDate;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof AuditableEntity that)) return false;
+        if (!super.equals(o)) return false;
+
+        return getCreatedDate().equals(that.getCreatedDate()) && getModifiedDate().equals(that.getModifiedDate());
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(super.hashCode(), getCreatedDate(), getModifiedDate());
     }
 
     @Override
@@ -55,5 +70,4 @@ public abstract class AuditableEntity extends BaseEntity {
                 ", modifiedDate=" + modifiedDate +
                 '}';
     }
-    // TODO: 10.02.2022 equals and hashCode
 }

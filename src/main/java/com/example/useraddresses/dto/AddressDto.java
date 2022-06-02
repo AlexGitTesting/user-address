@@ -9,6 +9,7 @@ import javax.validation.Valid;
 import javax.validation.constraints.*;
 import java.io.Serial;
 import java.io.Serializable;
+import java.util.Objects;
 
 /**
  * Represents dto for the address.
@@ -115,12 +116,30 @@ public final class AddressDto implements Serializable {
         return houseNumber;
     }
 
+    // TODO: 02.06.2022 set optional for null variables
     public String getFlatNumber() {
         return flatNumber;
     }
 
     public CountryDto getCountryDto() {
         return countryDto;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof AddressDto dto)) return false;
+        return Objects.equals(getId(), dto.getId())
+                && getCity().equals(dto.getCity())
+                && getStreet().equals(dto.getStreet())
+                && getHouseNumber().equals(dto.getHouseNumber())
+                && Objects.equals(getFlatNumber(), dto.getFlatNumber())
+                && getCountryDto().equals(dto.getCountryDto());
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(getId(), getCity(), getStreet(), getHouseNumber(), getFlatNumber(), getCountryDto());
     }
 
     @Override

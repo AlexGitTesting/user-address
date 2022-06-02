@@ -11,8 +11,10 @@ import java.io.Serializable;
 import java.util.Objects;
 import java.util.Optional;
 
+import static java.util.Optional.ofNullable;
+
 /**
- * Represents dto for user
+ * Represents dto for user.
  *
  * @author Alexandr Yefremov
  */
@@ -29,7 +31,7 @@ public final class UserDto implements Serializable {
     @Size(max = 100, min = 1, message = "user.validation.field.length")
     private final String lastname;
     @Size(max = 100, message = "user.validation.field.length")
-    private final String patronymic;
+    private final String patronymic;// TODO: 02.06.2022 optional
     @NotBlank(message = "user.validation.empty.field")
     @Size(max = 255, min = 1, message = "user.validation.field.length")
     @Email
@@ -87,7 +89,7 @@ public final class UserDto implements Serializable {
     }
 
     public Optional<Long> getId() {
-        return Optional.ofNullable(id);
+        return ofNullable(id);
     }
 
     public String getFirstname() {
@@ -112,7 +114,11 @@ public final class UserDto implements Serializable {
     public boolean equals(Object o) {
         if (this == o) return true;
         if (!(o instanceof UserDto userDto)) return false;
-        return Objects.equals(getId(), userDto.getId()) && getFirstname().equals(userDto.getFirstname()) && getLastname().equals(userDto.getLastname()) && getPatronymic().equals(userDto.getPatronymic()) && getEmail().equals(userDto.getEmail());
+        return Objects.equals(getId(), userDto.getId())
+                && getFirstname().equals(userDto.getFirstname())
+                && getLastname().equals(userDto.getLastname())
+                && getPatronymic().equals(userDto.getPatronymic())
+                && getEmail().equals(userDto.getEmail());
     }
 
     @Override

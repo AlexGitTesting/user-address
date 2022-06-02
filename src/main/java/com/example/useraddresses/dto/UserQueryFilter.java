@@ -6,11 +6,17 @@ import com.fasterxml.jackson.databind.annotation.JsonPOJOBuilder;
 import javax.validation.constraints.Pattern;
 import javax.validation.constraints.Size;
 import java.io.Serializable;
+import java.util.Objects;
 import java.util.Optional;
 
+import static java.util.Objects.hash;
 import static java.util.Optional.ofNullable;
 
-// TODO: 12.02.2022 fill
+/**
+ * Class which holds fields for filtering users.
+ *
+ * @author Alexandr Yefremov
+ */
 @JsonDeserialize(builder = UserQueryFilter.Builder.class)
 public class UserQueryFilter implements Serializable {
     private final Integer page;
@@ -141,4 +147,22 @@ public class UserQueryFilter implements Serializable {
         return ofNullable(countryId);
     }
 
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof UserQueryFilter that)) return false;
+        return isSortingAscending() == that.isSortingAscending()
+                && Objects.equals(getPage(), that.getPage())
+                && Objects.equals(getLimit(), that.getLimit())
+                && Objects.equals(getCity(), that.getCity())
+                && Objects.equals(getFirstname(), that.getFirstname())
+                && Objects.equals(getLastname(), that.getLastname())
+                && Objects.equals(getPatronymic(), that.getPatronymic())
+                && Objects.equals(getCountryId(), that.getCountryId());
+    }
+
+    @Override
+    public int hashCode() {
+        return hash(getPage(), getLimit(), isSortingAscending(), getCity(), getFirstname(), getLastname(), getPatronymic(), getCountryId());
+    }
 }

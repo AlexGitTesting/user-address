@@ -2,7 +2,7 @@ package com.example.useraddresses.service.converter;
 
 import com.example.useraddresses.domain.Address;
 import com.example.useraddresses.domain.Country;
-import com.example.useraddresses.domain.User;
+import com.example.useraddresses.domain.UserProfile;
 import com.example.useraddresses.dto.AddressDto;
 import com.example.useraddresses.dto.CountryDto;
 import org.junit.jupiter.api.Test;
@@ -43,7 +43,7 @@ class AddressConverterTest {
     @Test
     void convertToDto() {
         final Country ukraine = new Country(100L, "Ukraine");
-        final User user = new User(200L, LocalDateTime.now(),LocalDateTime.now(),"first", "last", "patronimic", "hk@gmail.com");
+        final UserProfile user = new UserProfile(200L, LocalDateTime.now(), LocalDateTime.now(), "first", "last", "patronimic", "hk@gmail.com");
         final Address address = new Address(user, "Kyiv", "street", "45", "65", ukraine);
         user.addOneAddress(address);
         final AddressDto addressDto = converter.convertToDto(address);

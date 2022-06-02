@@ -1,16 +1,20 @@
 package com.example.useraddresses.service;
 
-import com.example.useraddresses.domain.User;
+import com.example.useraddresses.domain.UserProfile;
 
 import javax.persistence.EntityNotFoundException;
 
-// TODO: 31.05.2022 fill
+/**
+ * Provide cacheable functionality.
+ *
+ * @author Alexandr Yefremov
+ */
 public interface CacheableUserService {
-    User getUserById(Long id) throws EntityNotFoundException;
+    UserProfile getUserById(Long id) throws EntityNotFoundException;
 
     boolean ifUserExists(final Long userId);
 
-    User saveUser(User user);
+    UserProfile saveUser(UserProfile user);
 
     Long deleteUser(Long id);
 }

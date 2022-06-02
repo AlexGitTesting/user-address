@@ -11,7 +11,6 @@ import org.mockito.ArgumentMatcher;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.SpyBean;
-import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.jdbc.Sql;
 
 import javax.persistence.EntityNotFoundException;
@@ -44,7 +43,7 @@ class AddressServiceTest {
     private AddressService addressService;
 
     @Test
-    @DirtiesContext(methodMode = DirtiesContext.MethodMode.BEFORE_METHOD)
+//    @DirtiesContext(methodMode = DirtiesContext.MethodMode.BEFORE_METHOD) todo clean
     void createAddress() {
         final CountryDto countryDto = CountryDto.builder().id(5L).name("kjshglkhg").build();
         final AddressDto addressDto = AddressDto.builder()
@@ -74,7 +73,7 @@ class AddressServiceTest {
 
     @Test
     void createAddressUserNotFoundByMockito() {
-        doThrow(EntityNotFoundException.class).when(userService).ifUserExists(1000L);
+        doThrow(EntityNotFoundException.class).when(userService).ifUserExists(eq(1000L));
         doNothing().when(validationService).validate(any(), anyString(), any());
         final CountryDto countryDto = CountryDto.builder().id(5L).name("kjshglkhg").build();
         final AddressDto addressDto = AddressDto.builder()
@@ -92,7 +91,6 @@ class AddressServiceTest {
 
     @Test
     void createAddressFailedValidation() {
-        doThrow(new ValidationCustomException(Collections.singletonMap("key", "value"))).when(validationService).validate(any(), anyString(), any());
         final CountryDto countryDto = CountryDto.builder().id(5L).name("kjshglkhg").build();
         final AddressDto addressDto = AddressDto.builder()
                 .id(null)
@@ -102,6 +100,7 @@ class AddressServiceTest {
                 .city("city")
                 .countryDto(countryDto)
                 .build();
+        doThrow(new ValidationCustomException(Collections.singletonMap("key", "value"))).when(validationService).validate(any(), anyString(), any());
         assertThrows(ValidationCustomException.class, () -> addressService.createAddress(List.of(addressDto), 1000L));
     }
 
