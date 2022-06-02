@@ -41,7 +41,7 @@ public class AddressServiceImpl implements AddressService {
 
     @Override
     @Transactional
-    public Set<Long> createAddress(List<AddressDto> dto, Long userId) throws ValidationCustomException {
+    public Set<Long> createAddress(Set<AddressDto> dto, Long userId) throws ValidationCustomException {
         verifyAddressesGroup(dto, RequiredFieldsForCreation.class);
         if (!cacheableUserService.ifUserExists(userId)) {
             throw new EntityNotFoundException(String.format("UserProfile by existing id - %s not found", userId));

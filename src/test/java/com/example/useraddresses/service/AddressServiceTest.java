@@ -16,7 +16,6 @@ import org.springframework.test.context.jdbc.Sql;
 
 import javax.persistence.EntityNotFoundException;
 import java.util.Collections;
-import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -55,7 +54,7 @@ class AddressServiceTest {
                 .city("city")
                 .countryDto(countryDto)
                 .build();
-        assertDoesNotThrow(() -> addressService.createAddress(List.of(addressDto), 100L));
+        assertDoesNotThrow(() -> addressService.createAddress(Set.of(addressDto), 100L));
     }
 
     @Test
@@ -69,7 +68,7 @@ class AddressServiceTest {
                 .city("city")
                 .countryDto(countryDto)
                 .build();
-        assertThrowsExactly(EntityNotFoundException.class, () -> addressService.createAddress(List.of(addressDto), 11L));
+        assertThrowsExactly(EntityNotFoundException.class, () -> addressService.createAddress(Set.of(addressDto), 11L));
     }
 
     @Test
@@ -85,7 +84,7 @@ class AddressServiceTest {
                 .city("city")
                 .countryDto(countryDto)
                 .build();
-        assertThrows(EntityNotFoundException.class, () -> addressService.createAddress(List.of(addressDto), 1000L));
+        assertThrows(EntityNotFoundException.class, () -> addressService.createAddress(Set.of(addressDto), 1000L));
         verify(validationService, atLeastOnce()).validate(any(), anyString(), any());
 
     }
@@ -102,7 +101,7 @@ class AddressServiceTest {
                 .countryDto(countryDto)
                 .build();
         doThrow(new ValidationCustomException(Collections.singletonMap("key", "value"))).when(validationService).validate(any(), anyString(), any());
-        assertThrows(ValidationCustomException.class, () -> addressService.createAddress(List.of(addressDto), 1000L));
+        assertThrows(ValidationCustomException.class, () -> addressService.createAddress(Set.of(addressDto), 1000L));
     }
 
     @Test

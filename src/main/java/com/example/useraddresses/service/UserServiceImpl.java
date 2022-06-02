@@ -1,5 +1,7 @@
 package com.example.useraddresses.service;
 
+import com.example.useraddresses.core.RequiredFieldsForCreation;
+import com.example.useraddresses.core.RequiredFieldsForUpdating;
 import com.example.useraddresses.core.ValidationCustomException;
 import com.example.useraddresses.dao.UserRepository;
 import com.example.useraddresses.dao.UserSpecification;
@@ -58,7 +60,7 @@ public class UserServiceImpl implements UserService {
     @Override
     @Transactional
     public UserDto createUser(UserDto dto) throws ValidationCustomException {
-        validationService.validate(dto, "Validation UserDto before creating ");
+        validationService.validate(dto, "Validation UserDto before creating ", RequiredFieldsForCreation.class);
         final UserProfile saved = cacheableUserService.saveUser(userConverter.convertToDomain(dto));
         emailService.sendSimpleMessage(saved.getEmail(), "user.message.subject", "user.message.text");
         return userConverter.convertToDto(saved);
@@ -89,7 +91,7 @@ public class UserServiceImpl implements UserService {
     @Override
     @Transactional(isolation = Isolation.REPEATABLE_READ)
     public AddressedUserDto updateUserProfile(UserDto dto) throws ValidationCustomException, EntityNotFoundException {
-        validationService.validate(dto, "UserDto");
+        validationService.validate(dto, "UserDto", RequiredFieldsForUpdating.class);
         final UserProfile user = cacheableUserService.getUserById(dto.getId().orElseThrow());
         userConverter.convertToDomainTarget(dto, user);
         final UserProfile saved = cacheableUserService.saveUser(user);

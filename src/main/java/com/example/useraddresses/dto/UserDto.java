@@ -1,11 +1,11 @@
 package com.example.useraddresses.dto;
 
+import com.example.useraddresses.core.RequiredFieldsForCreation;
+import com.example.useraddresses.core.RequiredFieldsForUpdating;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonPOJOBuilder;
 
-import javax.validation.constraints.Email;
-import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.Size;
+import javax.validation.constraints.*;
 import java.io.Serial;
 import java.io.Serializable;
 import java.util.Objects;
@@ -22,7 +22,9 @@ import static java.util.Optional.ofNullable;
 public final class UserDto implements Serializable {
     @Serial
     private static final long serialVersionUID = 42L;
-
+    @Null(groups = RequiredFieldsForCreation.class, message = "Id must be null")
+    @NotNull(groups = RequiredFieldsForUpdating.class, message = "Id must be not null and gritter then 0")
+    @Min(value = 1, groups = RequiredFieldsForUpdating.class, message = "Id must be not null and gritter then 0")
     private final Long id;
     @NotBlank(message = "user.validation.empty.field")
     @Size(max = 100, min = 1, message = "user.validation.field.length")
