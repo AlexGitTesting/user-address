@@ -9,13 +9,16 @@ spring:
     username: test_user
     password: test_password
   mail:
-    host: smtp.ukr.net
-    port: 2525
-    username: user3101bro@ukr.net
-    password: vevUF38o4V0t59Kx
+    host: smtp.gmail.com
+    port: 587
+    username: yefremov.alexandr.guru@gmail.com
+    password: cqwmzxiulmlmhqjh
     properties:
       mail:
         smtp:
           auth: true
           starttls:
             enable: true
+          connectiontimeout: 5000
+          timeout: 5000
+          writetimeout: 5000
