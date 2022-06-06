@@ -15,6 +15,20 @@ spring:
     url: jdbc:tc:postgresql:latest:///test
     username: test_user
     password: test_password
+  mail:
+    host: smtp.gmail.com
+    port: 587
+    username: yefremov.alexandr.guru@gmail.com
+    password: cqwmzxiulmlmhqjh
+    properties:
+      mail:
+        smtp:
+          auth: true
+          starttls:
+            enable: true
+          connectiontimeout: 5000
+          timeout: 5000
+          writetimeout: 5000
 
 logging:
   level:
