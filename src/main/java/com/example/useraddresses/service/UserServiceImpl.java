@@ -61,7 +61,8 @@ public class UserServiceImpl implements UserService {
     @Transactional
     public UserDto createUser(UserDto dto) throws ValidationCustomException {
         validationService.validate(dto, "Validation UserDto before creating ", RequiredFieldsForCreation.class);
-        final UserProfile saved = cacheableUserService.saveUser(userConverter.convertToDomain(dto));
+        final UserProfile saved = saveOrUpdateUser(userConverter.convertToDomain(dto));
+        // TODO: 06.06.2022 see if message can not be sent do rollback
         emailService.sendSimpleMessage(saved.getEmail(), "user.message.subject", "user.message.text");
         return userConverter.convertToDto(saved);
     }
@@ -70,12 +71,11 @@ public class UserServiceImpl implements UserService {
     @Override
     @Transactional(readOnly = true)
     public AddressedUserDto getUser(Long id) {
-        final UserProfile user = cacheableUserService.getUserById(id);
+        final UserProfile user = getUserById(id);
         return new AddressedUserDto(userConverter.convertToDto(user), user.getAddresses().stream().map(addressConverter::convertToDto).collect(toSet()));
     }
 
     @Override
-    @Transactional
     public Long deleteUser(Long id) {
         cacheableUserService.deleteUser(id);
         return id;
@@ -84,7 +84,7 @@ public class UserServiceImpl implements UserService {
     @Override
     @Transactional(readOnly = true)
     public UserModelDto getUserProfileForUpdate(Long id) throws EntityNotFoundException {
-        final UserProfile user = cacheableUserService.getUserById(id);
+        final UserProfile user = getUserById(id);
         return new UserModelDto(userConverter.convertToDto(user), countryService.getAllCountries());
     }
 
@@ -92,9 +92,9 @@ public class UserServiceImpl implements UserService {
     @Transactional(isolation = Isolation.REPEATABLE_READ)
     public AddressedUserDto updateUserProfile(UserDto dto) throws ValidationCustomException, EntityNotFoundException {
         validationService.validate(dto, "UserDto", RequiredFieldsForUpdating.class);
-        final UserProfile user = cacheableUserService.getUserById(dto.getId().orElseThrow());
+        final UserProfile user = getUserById(dto.getId().orElseThrow());
         userConverter.convertToDomainTarget(dto, user);
-        final UserProfile saved = cacheableUserService.saveUser(user);
+        final UserProfile saved = saveOrUpdateUser(user);
         Set<AddressDto> addresses = saved.getAddresses().isEmpty()
                 ? emptySet()
                 : saved.getAddresses().stream().map(addressConverter::convertToDto).collect(toUnmodifiableSet());
@@ -110,9 +110,18 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    @Transactional(readOnly = true)
-    public boolean ifUserExists(Long userId) {
+    public UserProfile getUserById(Long id) throws EntityNotFoundException {
+        return cacheableUserService.getUserById(id);
+    }
+
+    @Override
+    public UserProfile ifUserExists(Long userId) {
         return cacheableUserService.ifUserExists(userId);
+    }
+
+    @Override
+    public UserProfile saveOrUpdateUser(UserProfile user) {
+        return cacheableUserService.saveOrUpdateUser(user);
     }
 
 

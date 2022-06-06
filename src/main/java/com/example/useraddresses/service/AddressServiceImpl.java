@@ -18,32 +18,38 @@ import javax.validation.groups.Default;
 import java.util.*;
 import java.util.stream.Collectors;
 
+import static java.util.Objects.isNull;
 import static java.util.stream.Collectors.*;
 
+/**
+ * Implementation of the {@link AddressService}.
+ *
+ * @author Alexandr Yefremov
+ */
 @Service
-// TODO: 14.02.2022 fill 
 public class AddressServiceImpl implements AddressService {
     private final AddressRepository addressRepository;
     private final ValidationService validationService;
     private final AddressConverter addressConverter;
-    private final CacheableUserService cacheableUserService;
+    private final UserService userService;
 
     @Autowired
     public AddressServiceImpl(final AddressRepository addressRepository,
                               final ValidationService validationService,
                               final AddressConverter addressConverter,
-                              final CacheableUserService cacheableUserService) {
+                              final UserService userService) {
         this.addressRepository = addressRepository;
         this.validationService = validationService;
         this.addressConverter = addressConverter;
-        this.cacheableUserService = cacheableUserService;
+        this.userService = userService;
+
     }
 
     @Override
     @Transactional
     public Set<Long> createAddress(Set<AddressDto> dto, Long userId) throws ValidationCustomException {
         verifyAddressesGroup(dto, RequiredFieldsForCreation.class);
-        if (!cacheableUserService.ifUserExists(userId)) {
+        if (isNull(userService.ifUserExists(userId).getId())) {
             throw new EntityNotFoundException(String.format("UserProfile by existing id - %s not found", userId));
         }
         final UserProfile user = new UserProfile();

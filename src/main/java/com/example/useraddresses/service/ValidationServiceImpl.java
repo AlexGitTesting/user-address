@@ -16,13 +16,14 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 
 /**
+ * Implementation of the {@link ValidationService}
  *
+ * @author Alexandr Yefremov
  */
-// TODO: 12.02.2022  fill
 @Service
 public class ValidationServiceImpl implements ValidationService {
     private final SmartValidator validator;
-    private static Logger log= LoggerFactory.getLogger(ValidationServiceImpl.class);
+    private static Logger log = LoggerFactory.getLogger(ValidationServiceImpl.class);
 
 
     @Autowired
@@ -40,7 +41,8 @@ public class ValidationServiceImpl implements ValidationService {
             for (ObjectError objectError : mapBindingResult.getAllErrors()) {
                 if (objectError instanceof FieldError) {
                     messageMap.put(((FieldError) objectError).getField(), objectError.getDefaultMessage());
-                    if (objectError.getCodes()!=null&&objectError.getCodes().length>0){ Arrays.stream(objectError.getCodes()).forEach(s-> log.debug(s));
+                    if (objectError.getCodes() != null && objectError.getCodes().length > 0) {
+                        Arrays.stream(objectError.getCodes()).forEach(s -> log.debug(s));
                         log.debug(objectError.getDefaultMessage());
                     }
                 } else {

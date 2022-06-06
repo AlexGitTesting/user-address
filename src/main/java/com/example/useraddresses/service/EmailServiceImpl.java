@@ -3,7 +3,6 @@ package com.example.useraddresses.service;
 import com.example.useraddresses.config.MailProperties;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSource;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
@@ -33,8 +32,10 @@ public class EmailServiceImpl implements EmailService {
     @Resource
     private WebRequest webRequest;
 
-    @Autowired
-    public EmailServiceImpl(final JavaMailSender mailSender, final MailProperties mailProperties, final MessageSource messageSource) {
+
+    public EmailServiceImpl(final JavaMailSender mailSender,
+                            final MailProperties mailProperties,
+                            final MessageSource messageSource) {
         this.mailSender = mailSender;
         this.mailProperties = mailProperties;
         this.messageSource = messageSource;

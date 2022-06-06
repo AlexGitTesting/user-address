@@ -12,6 +12,11 @@ import org.springframework.stereotype.Service;
 
 import javax.persistence.EntityNotFoundException;
 
+/**
+ * Implementation of the {@link CacheableUserService}.
+ *
+ * @author Alexandr Yefremov
+ */
 @Service
 @CacheConfig(cacheNames = "users")
 public class CacheableUserServiceImpl implements CacheableUserService {
@@ -26,19 +31,24 @@ public class CacheableUserServiceImpl implements CacheableUserService {
     @Cacheable(key = "#id")
     public UserProfile getUserById(Long id) throws EntityNotFoundException {
         log.debug("method- getUserById; cache does not work");
-        return userRepository.getUserById(id).orElseThrow(() -> new EntityNotFoundException("UserProfile not found"));
+        return userRepository.getUserById(id)
+                .orElseThrow(() -> new EntityNotFoundException(String.format("UserProfile with id - %d not found", id)));
     }
 
     @Override
     @Cacheable(key = "#id")
-    public boolean ifUserExists(final Long id) {
+    public UserProfile ifUserExists(final Long id) {
         log.debug("method- ifUserExists; cache does not work");
-        return userRepository.existsById(id);
+        final UserProfile userProfile = new UserProfile();
+        if (userRepository.existsById(id)) {
+            userProfile.setId(id);
+        }
+        return userProfile;
     }
 
     @Override
     @CachePut(key = "#user.id")
-    public UserProfile saveUser(UserProfile user) {
+    public UserProfile saveOrUpdateUser(UserProfile user) {
         return userRepository.save(user);
     }
 

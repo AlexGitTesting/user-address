@@ -11,7 +11,6 @@ import org.mockito.ArgumentMatcher;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.SpyBean;
-import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.jdbc.Sql;
 
 import javax.persistence.EntityNotFoundException;
@@ -43,7 +42,6 @@ class AddressServiceTest {
     private AddressService addressService;
 
     @Test
-    @DirtiesContext(methodMode = DirtiesContext.MethodMode.BEFORE_METHOD)
     void createAddress() {
         final CountryDto countryDto = CountryDto.builder().id(5L).name("kjshglkhg").build();
         final AddressDto addressDto = AddressDto.builder()
