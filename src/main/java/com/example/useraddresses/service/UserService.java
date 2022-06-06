@@ -14,7 +14,7 @@ import javax.persistence.EntityNotFoundException;
  *
  * @author Alexandr Yefremov
  */
-public interface UserService {
+public interface UserService extends UserCrudService {
     /**
      * Creates new user
      *
@@ -69,13 +69,13 @@ public interface UserService {
      */
     Page<UserDto> getFilteredUsers(UserQueryFilter filter) throws ValidationCustomException;
 
-    /**
-     * Verify whether is user exist with specified id
-     *
-     * @param userId id
-     * @return true if exists, otherwise false
-     */
-    boolean ifUserExists(final Long userId);
+//    /**
+//     * Verify whether is user exist with specified id
+//     *
+//     * @param userId id
+//     * @return true if exists, otherwise false
+//     */
+//    boolean ifUserExists(final Long userId);
 
 
 }
