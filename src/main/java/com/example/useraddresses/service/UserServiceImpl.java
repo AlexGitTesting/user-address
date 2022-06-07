@@ -13,6 +13,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.CacheConfig;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
@@ -23,6 +24,8 @@ import javax.persistence.EntityNotFoundException;
 import java.util.Set;
 
 import static java.util.Collections.emptySet;
+import static java.util.Objects.nonNull;
+import static java.util.Objects.requireNonNullElse;
 import static java.util.stream.Collectors.toSet;
 import static java.util.stream.Collectors.toUnmodifiableSet;
 
@@ -61,8 +64,16 @@ public class UserServiceImpl implements UserService {
     @Transactional
     public UserDto createUser(UserDto dto) throws ValidationCustomException {
         validationService.validate(dto, "Validation UserDto before creating ", RequiredFieldsForCreation.class);
-        final UserProfile saved = saveOrUpdateUser(userConverter.convertToDomain(dto));
-        // TODO: 06.06.2022 see if message can not be sent do rollback
+        UserProfile saved = null;
+        try {
+            saved = saveOrUpdateUser(userConverter.convertToDomain(dto));
+        } catch (DataIntegrityViolationException e) {
+            final ValidationCustomException wrap = wrapInValidationCustomException(e);
+            if (nonNull(wrap)) {
+                throw wrap;
+            }
+            throw e;
+        }
         emailService.sendSimpleMessage(saved.getEmail(), "user.message.subject", "user.message.text");
         return userConverter.convertToDto(saved);
     }
@@ -70,7 +81,7 @@ public class UserServiceImpl implements UserService {
 
     @Override
     @Transactional(readOnly = true)
-    public AddressedUserDto getUser(Long id) {
+    public AddressedUserDto getUser(Long id) { // TODO: 07.06.2022  without addresses
         final UserProfile user = getUserById(id);
         return new AddressedUserDto(userConverter.convertToDto(user), user.getAddresses().stream().map(addressConverter::convertToDto).collect(toSet()));
     }
@@ -91,14 +102,29 @@ public class UserServiceImpl implements UserService {
     @Override
     @Transactional(isolation = Isolation.REPEATABLE_READ)
     public AddressedUserDto updateUserProfile(UserDto dto) throws ValidationCustomException, EntityNotFoundException {
-        validationService.validate(dto, "UserDto", RequiredFieldsForUpdating.class);
         final UserProfile user = getUserById(dto.getId().orElseThrow());
         userConverter.convertToDomainTarget(dto, user);
-        final UserProfile saved = saveOrUpdateUser(user);
+        UserProfile saved = saveOrUpdateUser(user);
         Set<AddressDto> addresses = saved.getAddresses().isEmpty()
                 ? emptySet()
                 : saved.getAddresses().stream().map(addressConverter::convertToDto).collect(toUnmodifiableSet());
         return new AddressedUserDto(userConverter.convertToDto(saved), addresses);
+    }
+
+    @Override
+    public AddressedUserDto validateAndUpdateUserProfile(UserDto dto) {
+        validationService.validate(dto, "UserDto", RequiredFieldsForUpdating.class);
+        AddressedUserDto addressedUserDto;
+        try {
+            addressedUserDto = updateUserProfile(dto);
+        } catch (DataIntegrityViolationException e) {
+            final ValidationCustomException wrap = wrapInValidationCustomException(e);
+            if (nonNull(wrap)) {
+                throw wrap;
+            }
+            throw e;
+        }
+        return addressedUserDto;
     }
 
     @Override
@@ -124,5 +150,23 @@ public class UserServiceImpl implements UserService {
         return cacheableUserService.saveOrUpdateUser(user);
     }
 
+    /**
+     * Wraps wrapped ConstraintViolationException in ValidationCustomException, if fields do not have unique values
+     *
+     * @param e DataIntegrityViolationException
+     * @return ValidationCustomException
+     */
+    private ValidationCustomException wrapInValidationCustomException(DataIntegrityViolationException e) {
+        ValidationCustomException customException = null;
+        if (nonNull(e.getMessage()) && e.getMessage().contains("user_profile_email_not_unique")) {
+            customException = new ValidationCustomException(e);
+            customException.getMessageMap().put("User email", "user.validation.email.non.unique");
+        }
+        if (nonNull(e.getMessage()) && e.getMessage().contains("user_profile_full_name_not_unique")) {
+            customException = requireNonNullElse(customException, new ValidationCustomException(e));
+            customException.getMessageMap().put("User's first name and last name", "user.validation.full.name.non.unique");
+        }
+        return customException;
+    }
 
 }

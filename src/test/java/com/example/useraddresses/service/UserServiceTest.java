@@ -6,6 +6,8 @@ import com.example.useraddresses.domain.UserProfile;
 import com.example.useraddresses.dto.*;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentMatcher;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockReset;
@@ -17,6 +19,7 @@ import org.springframework.test.context.jdbc.Sql;
 import javax.persistence.EntityNotFoundException;
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import static java.util.stream.Collectors.toSet;
@@ -32,6 +35,8 @@ import static org.mockito.Mockito.*;
 @SpringBootTest
 @TestPropertySource(properties = "logging.level.org.springframework.cache=trace")
 class UserServiceTest {
+
+    private final Logger log = LoggerFactory.getLogger(this.getClass());
 
     @Autowired
     private UserService userService;
@@ -62,6 +67,36 @@ class UserServiceTest {
                         userI.getLastname().equals(lastName) &&
                         userI.getEmail().equals(email);
         verify(userRepository, times(1)).save(argThat(matcher));
+
+    }
+
+    @Test
+    void createUserNotUniqueEmail() {
+        final String firstNAme = "First name";
+        final String lastName = "Last Name";
+        final String email = "dsfg@gmail.com";
+        final UserDto dto = UserDto.builder()
+                .firstname(firstNAme)
+                .lastname(lastName)
+                .email(email)
+                .build();
+
+        assertThrows(ValidationCustomException.class, () -> userService.createUser(dto));
+
+    }
+
+    @Test
+    void createUserNotUniqueFullName() {
+        final String firstNAme = "First name";
+        final String lastName = "Last Name";
+        final String email = "dsssfg@gmail.com";
+        final UserDto dto = UserDto.builder()
+                .firstname(firstNAme)
+                .lastname(lastName)
+                .email(email)
+                .build();
+
+        assertThrows(ValidationCustomException.class, () -> userService.createUser(dto));
 
     }
 
@@ -133,7 +168,47 @@ class UserServiceTest {
     }
 
     @Test
-    void updateUser() {
+    void updateUserProfileNotUniqueEmail() {
+        final String firstNAme = "First name";
+        final String lastName = "Last Name";
+        final String email = "dsfg@gmail.com";
+        final UserDto dto = UserDto.builder()
+                .firstname(firstNAme)
+                .lastname(lastName)
+                .email(email)
+                .id(101L)
+                .build();
+        try {
+            userService.validateAndUpdateUserProfile(dto);
+        } catch (ValidationCustomException e) {
+            final Map<String, String> messageMap = e.getMessageMap();
+            assertTrue(messageMap.containsKey("User email"));
+            assertEquals("user.validation.email.non.unique", messageMap.get("User email"));
+        }
+    }
+
+    @Test
+    void updateUserProfileNotUniqueFullName() {
+        final String firstNAme = "First name";
+        final String lastName = "Last Name";
+        final String email = "dsfhhg@gmail.com";
+        final UserDto dto = UserDto.builder()
+                .firstname(firstNAme)
+                .lastname(lastName)
+                .email(email)
+                .id(101L)
+                .build();
+        try {
+            userService.validateAndUpdateUserProfile(dto);
+        } catch (ValidationCustomException e) {
+            final Map<String, String> messageMap = e.getMessageMap();
+            assertTrue(messageMap.containsKey("User's first name and last name"));
+            assertEquals("user.validation.full.name.non.unique", messageMap.get("User's first name and last name"));
+        }
+    }
+
+    @Test
+    void updateUserProfile() {
         clearInvocations(userRepository);
         final long id = 100L;
         final UserDto newUser = UserDto.builder().id(id).firstname("firstname").email("newEmail@jkhjh.com").lastname("new last name").build();

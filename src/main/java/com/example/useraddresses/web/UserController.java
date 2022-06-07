@@ -65,7 +65,7 @@ public class UserController {
     @ResponseStatus(HttpStatus.OK)
     @PutMapping(value = "/update.json", consumes = MediaType.APPLICATION_JSON_VALUE)
     AddressedUserDto updateUser(@RequestBody UserDto dto) {
-        return userService.updateUserProfile(dto);
+        return userService.validateAndUpdateUserProfile(dto);
     }
 
     @Operation(summary = "Searches users by filter")

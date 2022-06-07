@@ -20,7 +20,7 @@ public interface UserService extends UserCrudService {
      *
      * @param dto holds user's data
      * @return created user's data
-     * @throws ValidationCustomException if fields of the dto are invalid
+     * @throws ValidationCustomException if fields of the dto are invalid, or email is not unique
      */
     UserDto createUser(UserDto dto) throws ValidationCustomException;
 
@@ -55,10 +55,9 @@ public interface UserService extends UserCrudService {
      *
      * @param dto data for update user
      * @return user+addresses
-     * @throws ValidationCustomException new params is invalid
-     * @throws EntityNotFoundException   user with specified id not found
+     * @throws EntityNotFoundException user with specified id not found
      */
-    AddressedUserDto updateUserProfile(UserDto dto) throws ValidationCustomException, EntityNotFoundException;
+    AddressedUserDto updateUserProfile(UserDto dto) throws EntityNotFoundException;
 
     /**
      * Looks for users by filter's params
@@ -69,13 +68,13 @@ public interface UserService extends UserCrudService {
      */
     Page<UserDto> getFilteredUsers(UserQueryFilter filter) throws ValidationCustomException;
 
-//    /**
-//     * Verify whether is user exist with specified id
-//     *
-//     * @param userId id
-//     * @return true if exists, otherwise false
-//     */
-//    boolean ifUserExists(final Long userId);
-
+    /**
+     * Validates user profile data.
+     *
+     * @param dto UserDto
+     * @return user+addresses
+     * @throws ValidationCustomException if new params is not valid or params do not match the constraints
+     */
+    AddressedUserDto validateAndUpdateUserProfile(UserDto dto) throws ValidationCustomException;
 
 }

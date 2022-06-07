@@ -20,9 +20,9 @@ import java.util.Objects;
 public final class AddressDto implements Serializable {
     @Serial
     private static final long serialVersionUID = 42L;
-    @Null(groups = RequiredFieldsForCreation.class, message = "Id must be null")
-    @NotNull(groups = RequiredFieldsForUpdating.class, message = "Id must be not null and gritter then 0")
-    @Min(value = 1, groups = RequiredFieldsForUpdating.class, message = "Id must be not null and gritter then 0")
+    @Null(groups = RequiredFieldsForCreation.class, message = "user.validation.id.not.null")
+    @NotNull(groups = RequiredFieldsForUpdating.class, message = "user.validation.id.null")
+    @Min(value = 1, groups = RequiredFieldsForUpdating.class, message = "user.validation.id.null")
     private final Long id;
     @NotBlank(message = "user.validation.empty.field")
     @Size(max = 30, min = 1, message = "user.validation.field.length")

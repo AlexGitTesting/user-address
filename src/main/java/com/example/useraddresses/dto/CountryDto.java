@@ -19,8 +19,8 @@ import static java.util.Objects.hash;
 public final class CountryDto implements Serializable {
     @Serial
     private static final long serialVersionUID = 42L;
-    @NotNull
-    @Min(value = 1, message = "Country id must be not null and bigger then 0")
+    @NotNull(message = "user.validation.country.not.fount")
+    @Min(value = 1, message = "user.validation.id.null")
     private final Long id;
     private final String name;
 
