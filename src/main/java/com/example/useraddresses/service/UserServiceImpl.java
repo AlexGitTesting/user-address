@@ -151,7 +151,8 @@ public class UserServiceImpl implements UserService {
     }
 
     /**
-     * Wraps wrapped ConstraintViolationException in ValidationCustomException, if fields do not have unique values
+     * Wraps ConstraintViolationException (wrapped in {@link DataIntegrityViolationException}) in ValidationCustomException,
+     * if fields do not have unique values
      *
      * @param e DataIntegrityViolationException
      * @return ValidationCustomException

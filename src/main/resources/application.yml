@@ -3,7 +3,11 @@ logging:
     sql: info
     root: info
     web: debug
+    org.hibernate.type.descriptor.sql.BasicBinder: trace
 spring:
+  jpa:
+    show-sql: true
+    open-in-view: false
   datasource:
     url: jdbc:postgresql://localhost:5438/user_address_db
     username: test_user
